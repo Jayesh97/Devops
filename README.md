@@ -6,11 +6,8 @@ In this milestone we have provisioned ansible server and jekins server with nece
 
 [screencast link](https://drive.google.com/file/d/1oTsAS8ORqxpXihMtH61SJrlXxElgOpNT/view?usp=sharing)
 
-<<<<<<< HEAD
-## Instructionsss
-=======
-## Instructionss
->>>>>>> cba2d4d8a729d73ead761c7760e83e212075392f
+
+## Instructions
 
 ### Building the Ansible and Jenkins server
 
