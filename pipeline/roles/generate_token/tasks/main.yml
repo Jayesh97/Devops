@@ -1,0 +1,38 @@
+---
+- name: Get crumb
+  uri:
+    url: http://192.168.33.20:9000/crumbIssuer/api/json
+    user: "{{JK_USR}}"
+    password: "{{JK_PASSWD}}"
+    force_basic_auth: yes
+  register: result
+
+# curl http://192.168.33.20:9000/crumbIssuer/api/json --user admin:admin
+# curl http://192.168.33.20:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken --data 'newTokenName=kb-token' --user admin:admin
+
+- name: Generate Access token
+  uri:
+    url: http://192.168.33.20:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken
+    method: POST
+    user: "{{JK_USR}}"
+    password: "{{JK_PASSWD}}"
+    body_format: form-urlencoded
+    body:
+      newTokenName: job
+      Jenkins-Crumb: "{{result.json.crumb}}"
+    force_basic_auth: yes
+  register: token_body
+  
+- set_fact:
+    crumb: "{{result.json.crumb}}"
+    token: "{{token_body.json.data.tokenValue}}"
+
+- debug: 
+    msg: "{{token}}"
+
+
+# - name: setting environemt
+#   shell: "echo $token"
+#   environment:
+#     crumb: result.json.crumb
+#     token: token.json.data.tokenValue

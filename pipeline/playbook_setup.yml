@@ -12,10 +12,40 @@
       extensions:
         - yml
   roles:
-    - ping
-    - update
-    - environment
-    - jenkins
-    - mongo_install
-    - mongo_config
-    - nodejs
+    # - ping
+    # - update
+    # - environment
+    # - jenkins
+    # - mongo_install
+    # - mongo_config
+    # - nodejs
+
+- hosts: localhost
+  pre_tasks:
+    - name: Loading the variables
+      include_vars:
+        dir: vars
+        ignore_unknown_extensions: True
+        extensions:
+          - yml
+  roles:
+    - generate_token
+
+
+- hosts: jenkins
+  tasks:
+    - debug:
+        msg: "{{hostvars['localhost']['token']}}"
+  
+  
+- hosts: jenkins
+  pre_tasks:
+    - name: Loading the variables
+      include_vars:
+        dir: vars
+        ignore_unknown_extensions: True
+        extensions:
+          - yml
+      
+  roles:
+    - job_builder

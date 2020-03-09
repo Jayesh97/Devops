@@ -8,6 +8,8 @@ const fs = require('fs');
 const scpSync = require('../lib/scp');
 const sshSync = require('../lib/ssh');
 
+//https://www.npmjs.com/package/yargs-parser
+
 exports.command = 'setup';
 exports.desc = 'Configures Jenkins and build Environment';
 exports.builder = yargs => {
@@ -33,13 +35,13 @@ exports.handler = async argv => {
 
     (async () => {
 
-        await run( privateKey );
+        //await run( privateKey );
         if (fs.existsSync(path.resolve('pipeline/playbook_setup.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini'))) {
             await jenkins_setup('pipeline/playbook_setup.yml', 'pipeline/inventory.ini', vaultfilePath);
         }
 
         else {
-            console.error(`File or inventory don't exist. Make sure to provide path from root of cm directory`);
+            console.error(`File or inventory don't exist. Make sure to provide path from root of pipeline directory`);
         }
 
     })();
@@ -55,7 +57,7 @@ async function run(privateKey) {
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
     console.log(chalk.blueBright('Provisioning jenkins server...'));
-    result = child.spawnSync(`bakerx`, `run jenkins-srv bionic --ip 192.168.33.20`.split(' '), {shell:true, stdio: 'inherit'} );
+    result = child.spawnSync(`bakerx`, `run jenkins-srv bionic --ip 192.168.33.20 --memory 2048`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
     console.log(chalk.blueBright('Installing privateKey on configuration server'));

@@ -1,37 +1,37 @@
 ---
-    - name: Add an Apt signing key, uses whichever key is at the URL
-      become: yes
-      apt_key:
-        url: https://www.mongodb.org/static/pgp/server-4.2.asc
-        state: present
-    
-    - name: Create source list file for mongodb
-      become: yes
-      apt_repository:
-        repo: deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse
-        state: present
-        filename: mongodb-org-4.2
-    
-    - name: Updated package database
-      become: yes
-      apt:
-        update_cache: yes
-    
-    - name: Install mongodb
-      become: yes
-      apt: 
-        name: mongodb-org
-        state: latest
-    
-    - name: Reload system daemon
-      become: yes
-      systemd:
-        daemon_reload: yes
-    
-    - name: Start and enable mongodb service
-      become: yes
-      systemd:
-        name: mongod.service
-        state: started
-        enabled: yes
+- name: Add an Apt signing key, uses whichever key is at the URL
+  become: yes
+  apt_key:
+    url: https://www.mongodb.org/static/pgp/server-4.2.asc
+    state: present
+
+- name: Create source list file for mongodb
+  become: yes
+  apt_repository:
+    repo: deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu bionic/mongodb-org/4.2 multiverse
+    state: present
+    filename: mongodb-org-4.2
+
+- name: Updated package database
+  become: yes
+  apt:
+    update_cache: yes
+
+- name: Install mongodb
+  become: yes
+  apt: 
+    name: mongodb-org
+    state: latest
+
+- name: Reload system daemon
+  become: yes
+  systemd:
+    daemon_reload: yes
+
+- name: Start and enable mongodb service
+  become: yes
+  systemd:
+    name: mongod.service
+    state: started
+    enabled: yes
     

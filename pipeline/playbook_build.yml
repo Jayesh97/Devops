@@ -3,14 +3,13 @@
     # https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
     
     
-    - hosts: jenkins
-      pre_tasks:
-      - name: Loading the variables
-        include_vars:
-          dir: vars
-          ignore_unknown_extensions: True
-          extensions:
-            - yml
-      roles:
-        - job_builder
-        - job_trigger
+- hosts: localhost
+  pre_tasks:
+  - name: Loading the variables
+    include_vars:
+      dir: vars
+      ignore_unknown_extensions: True
+      extensions:
+        - yml
+  roles:
+    - job_trigger

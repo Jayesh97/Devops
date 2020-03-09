@@ -1,9 +1,7 @@
 ---
-- name: Installing pip
-  become: yes
-  apt:
-    name: python3-pip
-    state: present
+- name: print
+  debug:
+    msg: "{{hostvars['localhost']['token']}}"
 
 - name: Installing jenkins job builder
   become: yes
@@ -17,4 +15,39 @@
     name: pm2
     global: yes
     state: latest
+
+- name: create a jenkins_jobs directory
+  become: yes
+  file:
+    path: /etc/jenkins_jobs
+    state: directory
+    mode: '0755'
+
+- name: push the jenkins_jobs.ini into the folder
+  become: yes
+  template:
+    src: jenkins_jobs.ini.j2
+    dest: /etc/jenkins_jobs/jenkins_jobs.ini
+    mode: 0755
+    owner: jenkins
+
+- name: push the yml file
+  become: yes
+  template:
+    src: job_file.yml.j2
+    dest: /var/lib/jenkins/jobs/hello.yml
+    mode: 0755
+    owner: jenkins
+
+# - name: print data
+#   debug:
+#     msg: "{{token.json.data.tokenValue}}"
+
+- name: create jobs
+  become: yes
+  shell: 
+    cmd: jenkins-jobs update jobs
+  args:
+    chdir: /var/lib/jenkins
+
   

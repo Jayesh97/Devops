@@ -1,69 +1,16 @@
 ---
-- name: start mongodb service
-  become: yes
-  systemd:
-    name: mongod.service
-    state: started
-
 - name: Get crumb
   uri:
-    url: http://127.0.0.1:9000/crumbIssuer/api/json
+    url: http://192.168.33.20:9000/crumbIssuer/api/json
     user: "{{JK_USR}}"
     password: "{{JK_PASSWD}}"
     force_basic_auth: yes
   register: result
 
-- name: Generate Access token
-  uri:
-    url: http://127.0.0.1:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken
-    method: POST
-    user: "{{JK_USR}}"
-    password: "{{JK_PASSWD}}"
-    body_format: form-urlencoded
-    body:
-      newTokenName: job
-      Jenkins-Crumb: "{{result.json.crumb}}"
-    force_basic_auth: yes
-  register: token
-
-- name: create a jenkins_jobs directory
-  become: yes
-  file:
-    path: /etc/jenkins_jobs
-    state: directory
-    mode: '0755'
-  
-- name: push the jenkins_jobs.ini into the folder
-  become: yes
-  template:
-    src: jenkins_jobs.ini.j2
-    dest: /etc/jenkins_jobs/jenkins_jobs.ini
-    mode: 0755
-    owner: jenkins
-
-- name: push the yml file
-  become: yes
-  template:
-    src: job_file.yml.j2
-    dest: /var/lib/jenkins/jobs/hello.yml
-    mode: 0755
-    owner: jenkins
-
-# - name: print data
-#   debug:
-#     msg: "{{token.json.data.tokenValue}}"
-
-- name: create jobs
-  become: yes
-  shell: 
-    cmd: jenkins-jobs update jobs
-  args:
-    chdir: /var/lib/jenkins
-
 - name: Get Latest Job URL - before trigger
   become: yes
   uri:
-    url: "http://127.0.0.1:9000/job/checkbox.io/api/json?pretty=true?"
+    url: "http://192.168.33.20:9000/job/checkbox.io/api/json?pretty=true?"
     method: POST
     user: "{{JK_USR}}"
     password: "{{JK_PASSWD}}"
@@ -79,7 +26,7 @@
 - name: Trigger the build Job
   become: yes
   uri: 
-    url: "http://127.0.0.1:9000/job/checkbox.io/build"
+    url: "http://192.168.33.20:9000/job/checkbox.io/build"
     method: POST
     user: "{{JK_USR}}"
     password: "{{JK_PASSWD}}"
@@ -99,7 +46,7 @@
 - name: Get Latest Job - non null
   become: yes
   uri:
-    url: "http://127.0.0.1:9000/job/checkbox.io/api/json?pretty=true?"
+    url: "http://192.168.33.20:9000/job/checkbox.io/api/json?pretty=true?"
     method: POST
     user: "{{JK_USR}}"
     password: "{{JK_PASSWD}}"
@@ -119,7 +66,7 @@
 - name: Get Latest Job URL - after trigger
   become: yes
   uri:
-    url: "http://127.0.0.1:9000/job/checkbox.io/api/json?pretty=true?"
+    url: "http://192.168.33.20:9000/job/checkbox.io/api/json?pretty=true?"
     method: POST
     user: "{{JK_USR}}"
     password: "{{JK_PASSWD}}"
@@ -138,10 +85,10 @@
 - debug: 
     msg: "{{latest_job_after_trigger.json.lastCompletedBuild.url}}"
 
-- name: API call to get the console output
-  become: yes
-  shell: curl {{latest_job_after_trigger.json.lastCompletedBuild.url}}consoleText --user {{JK_USR}}:{{JK_PASSWD}}
-  register: curl_op
+# - name: API call to get the console output
+#   become: yes
+#   shell: curl {{latest_job_after_trigger.json.lastCompletedBuild.url}}consoleText --user {{JK_USR}}:{{JK_PASSWD}}
+#   register: curl_op
 
-- debug: 
-    msg: "{{curl_op.stdout_lines}}"
+# - debug: 
+#     msg: "{{curl_op.stdout_lines}}"

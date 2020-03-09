@@ -24,8 +24,6 @@
     name: pymongo
     state: present
 
-    
-
 - name: Creating a user in mongodb
   mongodb_user:
     login_port: "27017"
