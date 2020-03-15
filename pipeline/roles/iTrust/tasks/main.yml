@@ -1,0 +1,5 @@
+---
+- include_role:
+    - mysql.yml
+    - google-chrome.yml
+    - iTrust.yml

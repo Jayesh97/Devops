@@ -35,7 +35,7 @@ exports.handler = async argv => {
 
     (async () => {
 
-        //await run( privateKey );
+        await run( privateKey );
         if (fs.existsSync(path.resolve('pipeline/playbook_setup.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini'))) {
             await jenkins_setup('pipeline/playbook_setup.yml', 'pipeline/inventory.ini', vaultfilePath);
         }

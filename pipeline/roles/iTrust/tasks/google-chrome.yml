@@ -1,0 +1,20 @@
+---
+- name: Install the gpg key for google-chrome
+  become: yes
+  apt_key:
+    url: "https://dl-ssl.google.com/linux/linux_signing_key.pub"
+    state: present
+
+- name: Install the Google Chrome Latest repo
+  become: yes
+  apt_repository:
+    repo: "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main"
+    state: present
+    filename: google-chrome
+    update_cache: yes
+
+- name: Install Google Chrome
+  become: yes
+  apt: 
+    name: google-chrome-stable
+    state: latest

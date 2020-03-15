@@ -1,0 +1,59 @@
+---
+- name: Installing MySQL v5.7.X
+  become: yes
+  apt:
+    name: mysql-server=5.7.*
+    state: present
+  
+- name: Start MySQL service
+  become: yes
+  systemd:
+    name: mysql
+    state: started
+
+- name: Installing Pip
+  become: yes
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Installing PyMySQL module
+  become: yes
+  pip:
+    name: pymysql
+    state: present
+
+- name: Set a password for root accounts
+  become: yes
+  mysql_user:
+    login_user: root
+    login_password: ''
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    check_implicit_admin: yes
+    name: root
+    password: '{{mysql_login_password}}'
+
+- name: Remove root accounts that are accessible from outside the localhost
+  mysql_user:
+    login_user: '{{mysql_login_user}}'
+    login_password: '{{mysql_login_password}}'
+    name: root
+    host: "!localhost"
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove anonymous-user accounts
+  mysql_user:
+    login_user: '{{mysql_login_user}}'
+    login_password: '{{mysql_login_password}}'
+    name: ''
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+
+- name: Remove the test database
+  mysql_db:
+    login_user: '{{mysql_login_user}}'
+    login_password: '{{mysql_login_password}}'
+    name: test
+    state: absent
+    login_unix_socket: /var/run/mysqld/mysqld.sock

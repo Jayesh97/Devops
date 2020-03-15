@@ -7,9 +7,6 @@
     force_basic_auth: yes
   register: result
 
-# curl http://192.168.33.20:9000/crumbIssuer/api/json --user admin:admin
-# curl http://192.168.33.20:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken --data 'newTokenName=kb-token' --user admin:admin
-
 - name: Generate Access token
   uri:
     url: http://192.168.33.20:9000/me/descriptorByName/jenkins.security.ApiTokenProperty/generateNewToken
@@ -29,10 +26,3 @@
 
 - debug: 
     msg: "{{token}}"
-
-
-# - name: setting environemt
-#   shell: "echo $token"
-#   environment:
-#     crumb: result.json.crumb
-#     token: token.json.data.tokenValue
