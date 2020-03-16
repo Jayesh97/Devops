@@ -1,5 +1,7 @@
 ---
-- include_role:
-    - mysql.yml
-    - google-chrome.yml
-    - iTrust.yml
+- name: Install MySQL
+  include_tasks: mysql.yml
+- name: Install Google Chrome
+  include_tasks: google-chrome.yml
+- name: Setup iTrust build pipeline
+  include: iTrust.yml
