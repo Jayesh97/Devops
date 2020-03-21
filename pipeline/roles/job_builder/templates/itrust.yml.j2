@@ -1,0 +1,36 @@
+- job:
+    name: iTrust
+    defaults: global
+    project-type: pipeline
+    dsl: |
+        node {
+            try {
+                stage('Checkout'){
+                    git 'https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v6.git'
+                }
+                stage('Configure'){
+                    dir('iTrust2/src/main/java') {
+                        sh 'sed "2,3d" db.properties.template >> db.properties'
+                        sh "echo 'username {{mysql_login_user}}' >> db.properties"
+                        sh "echo 'password {{mysql_login_password}}' >> db.properties"
+                        sh "sed 's/from /from {{email_from}}/g' email.properties.template >> email.properties"
+                        sh "sed -i 's/username /username {{email_username}}/g' email.properties"
+                        sh "sed -i 's/password /password {{email_password}}/g' email.properties"
+                    }
+                }
+                stage('Build'){
+                    dir('iTrust2/') {
+                        sh 'mvn -f pom-data.xml process-test-classes'
+                    }
+                }
+                stage('UnitTest'){
+                    dir('iTrust2/'){
+                        sh 'mvn clean test verify org.apache.maven.plugins:maven-checkstyle-plugin:3.1.0:checkstyle'
+                    }
+                }
+            } catch(e) {
+                println 'Build Failure'
+            } finally {
+                cleanWs()
+            }
+        }

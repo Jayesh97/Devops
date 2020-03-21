@@ -31,17 +31,21 @@
     mode: 0755
     owner: jenkins
 
-- name: push the yml file
+- name: push the checkbox yml file
   become: yes
   template:
-    src: job_file.yml.j2
-    dest: /var/lib/jenkins/jobs/hello.yml
+    src: checkbox.yml.j2
+    dest: /var/lib/jenkins/jobs/checkbox.yml
     mode: 0755
     owner: jenkins
 
-# - name: print data
-#   debug:
-#     msg: "{{token.json.data.tokenValue}}"
+- name: push the iTrust yml file
+  become: yes
+  template:
+    src: itrust.yml.j2
+    dest: /var/lib/jenkins/jobs/itrust.yml
+    mode: 0755
+    owner: jenkins
 
 - name: create jobs
   become: yes
@@ -49,5 +53,3 @@
     cmd: jenkins-jobs update jobs
   args:
     chdir: /var/lib/jenkins
-
-  

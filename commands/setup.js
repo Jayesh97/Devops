@@ -24,24 +24,34 @@ exports.builder = yargs => {
             type: 'string',
             default: 'pipeline/password/jenkins',
             nargs: 1
-	}
+        },
+        gh_user: {
+            describe: 'Github Username',
+            type: 'string',
+            nargs: 1
+        },
+        gh_pass: {
+            describe: 'Github Password',
+            type: 'string',
+            nargs: 1
+        }
 
     });
 };
 
 
 exports.handler = async argv => {
-    const { privateKey, vaultfilePath} = argv;
+    const { privateKey, vaultfilePath, gh_user, gh_pass } = argv;
 
     (async () => {
 
         await run( privateKey );
-        if (fs.existsSync(path.resolve('pipeline/playbook_setup.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini'))) {
-            await jenkins_setup('pipeline/playbook_setup.yml', 'pipeline/inventory.ini', vaultfilePath);
+        if (fs.existsSync(path.resolve('pipeline/playbook_setup.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini')) && !process.env.GH_USER && !process.env.GH_PASS) {
+            await jenkins_setup('pipeline/playbook_setup.yml', 'pipeline/inventory.ini', vaultfilePath, gh_user, gh_pass);
         }
 
         else {
-            console.error(`File or inventory don't exist. Make sure to provide path from root of pipeline directory`);
+            console.error(`Playbook or inventory don't exist. Environmental Variables not set`);
         }
 
     })();
@@ -71,13 +81,13 @@ async function run(privateKey) {
 
 }
 
-async function jenkins_setup(file, inventory, vaultfilePath) {
+async function jenkins_setup(file, inventory, vaultfilePath, gh_user, gh_pass) {
     // the paths should be from root of pipeline directory
     // Transforming path of the files in host to the path in VM's shared folder
     let filePath = '/bakerx/'+ file;
     let inventoryPath = '/bakerx/' +inventory;	
     vaultfilePath = '/bakerx/'+ vaultfilePath;
     console.log(chalk.blueBright('Running ansible script...'));
-    let result = sshSync(`/bakerx/pipeline/run-ansible.sh ${filePath} ${inventoryPath} ${vaultfilePath}`, 'vagrant@192.168.33.10');
+    let result = sshSync(`/bakerx/pipeline/run-ansible.sh ${filePath} ${inventoryPath} ${vaultfilePath} ${gh_user} ${gh_pass}`, 'vagrant@192.168.33.10');
     if( result.error ) { process.exit( result.status ); }
 }
