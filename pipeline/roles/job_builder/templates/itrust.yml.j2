@@ -13,9 +13,11 @@
                         sh 'sed "2,3d" db.properties.template >> db.properties'
                         sh "echo 'username {{mysql_login_user}}' >> db.properties"
                         sh "echo 'password {{mysql_login_password}}' >> db.properties"
-                        sh "sed 's/from /from {{email_from}}/g' email.properties.template >> email.properties"
-                        sh "sed -i 's/username /username {{email_username}}/g' email.properties"
-                        sh "sed -i 's/password /password {{email_password}}/g' email.properties"
+                        withCredentials([usernamePassword(credentialsId: '{{credentials_id}}', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
+                            sh "sed 's/from /from $USERNAME@gmail.com/g' email.properties.template >> email.properties"
+                            sh "sed -i 's/username /username $USERNAME/g' email.properties"
+                            sh "sed -i 's/password /password $PASSWORD/g' email.properties"
+                        }
                     }
                 }
                 stage('Build'){
@@ -23,7 +25,7 @@
                         sh 'mvn -f pom-data.xml process-test-classes'
                     }
                 }
-                stage('UnitTest'){
+                stage('Test'){
                     dir('iTrust2/'){
                         sh 'mvn clean test verify org.apache.maven.plugins:maven-checkstyle-plugin:3.1.0:checkstyle'
                     }
