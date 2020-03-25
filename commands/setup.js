@@ -28,11 +28,13 @@ exports.builder = yargs => {
         gh_user: {
             describe: 'Github Username',
             type: 'string',
+            default: process.env.GH_USER,
             nargs: 1
         },
         gh_pass: {
             describe: 'Github Password',
             type: 'string',
+            default: process.env.GH_PASS,
             nargs: 1
         }
 
@@ -42,7 +44,6 @@ exports.builder = yargs => {
 
 exports.handler = async argv => {
     const { privateKey, vaultfilePath, gh_user, gh_pass } = argv;
-
     (async () => {
 
         await run( privateKey );

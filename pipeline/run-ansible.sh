@@ -16,6 +16,10 @@ function die {
 
 PLAYBOOK=$1
 INVENTORY=$2
+echo "ansible-playbook --vault-password-file ********* $PLAYBOOK -i $INVENTORY -e {'GH_USER': ******, 'GH_PASS': ********}" > /dev/null
+
+set +x
+
 VAULT_PASSWORD_FILE=$3
 GH_USER=$4
 GH_PASS=$5

@@ -1,61 +1,99 @@
-const child = require('child_process');
-const chalk = require('chalk');
-const path = require('path');
-const os = require('os');
-const fs = require('fs');
+require('dotenv').config();
+var JK_USER = process.env.JK_USER;
+var JK_PASS = process.env.JK_PASS;
+const jenkins = require('jenkins')({ baseUrl: 'http://'+JK_USER+':'+JK_PASS+'@192.168.33.20:9000', crumbIssuer: true, promisify: true });
 
-
-const scpSync = require('../lib/scp');
-const sshSync = require('../lib/ssh');
-
-// exports.command = 'build <file> <inventory>';
 exports.command = 'build <build_name>';
-exports.desc = 'Trigger a build job (named checkbox.io), wait for output, and print build log';
+exports.desc = 'Trigger a Jenkins job and print the build log';
 exports.builder = yargs => {
     yargs.options({
         build_name:{
-            describe: 'Name of the build to be triggered',
+            describe: 'Name of the job to be triggered',
             type: 'string'
-        },
-        vaultfilePath: {
-            alias: 'vp',
-            describe: 'Password file  for ansible-vault',
-            type: 'string',
-            default: 'pipeline/password/jenkins',
-            nargs: 1
-	}
-    });
+        }
+	});
 };
 
-
 exports.handler = async argv => {
-    const { build_name, vaultfilePath } = argv;
-
-    console.log(build_name);
+    const { build_name } = argv;
 
     (async () => {
 
-        if (fs.existsSync(path.resolve('pipeline/playbook_build.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini')) && build_name==="checkbox.io") {
-            await jenkins_build('pipeline/playbook_build.yml','pipeline/inventory.ini', vaultfilePath);
+        if (build_name==="checkbox.io" || build_name==="iTrust") {
+            await main(build_name);
         }
-
         else {
-            console.error(`Did you mean build_name as checkbox.io??`);
+            console.error(`checkbox.io or iTrust`);
         }
 
     })();
 
 };
 
-async function jenkins_build(file, inventory, vaultfilePath) {
+async function getBuildStatus(job, id) {
+    return new Promise(async function(resolve, reject)
+    {
+        console.log(`Fetching ${job}: ${id}`);
+        let result = await jenkins.build.get(job, id);
+        resolve(result);
+    });
+}
 
-    // the paths should be from root of cm directory
-    // Transforming path of the files in host to the path in VM's shared folder
-    let filePath = '/bakerx/'+ file;
-    let inventoryPath = '/bakerx/' +inventory;
-    vaultfilePath = '/bakerx/'+ vaultfilePath;
-    console.log(chalk.blueBright('Running ansible script for build...'));
-    let result = sshSync(`/bakerx/pipeline/run-ansible.sh ${filePath} ${inventoryPath} ${vaultfilePath}`, 'vagrant@192.168.33.10');
-    if( result.error ) { process.exit( result.status ); }
+async function waitOnQueue(id) {
+    return new Promise(function(resolve, reject)
+    {
+        jenkins.queue.item(id, function(err, item) {
+            if (err) throw err;
+            // console.log('queue', item);
+            if (item.executable) {
+                console.log('number:', item.executable.number);
+                resolve(item.executable.number);
+            } else if (item.cancelled) {
+                console.log('cancelled');
+                reject('canceled');
+            } else {
+                setTimeout(async function() {
+                    resolve(await waitOnQueue(id));
+                }, 5000);
+            }
+        });
+    });
+    }
+    
+
+async function triggerBuild(job) 
+{
+    let queueId = await jenkins.job.build(job);
+    let buildId = await waitOnQueue(queueId);
+    return buildId;
+}
+
+async function main(build_name)
+{
+
+    console.log('Triggering build.')
+    let buildId = await triggerBuild(build_name).catch( e => console.log(e));
+
+    console.log(`Received ${buildId}`);
+    let build = await getBuildStatus(build_name, buildId);
+    console.log( `Build result: ${build.result}` );
+
+    console.log(`Build output`);
+    let output = await jenkins.build.log({name: build_name, number: buildId});
+    console.log( output );
+
+    var log = jenkins.build.logStream(build_name, buildId);
+ 
+    log.on('data', function(text) {
+        process.stdout.write(text);
+    });
+    
+    log.on('error', function(err) {
+        console.log('error', err);
+    });
+    
+    log.on('end', function() {
+        console.log('end');
+    });
 
 }
