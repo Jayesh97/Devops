@@ -23,6 +23,3 @@
 - set_fact:
     crumb: "{{result.json.crumb}}"
     token: "{{token_body.json.data.tokenValue}}"
-
-- debug: 
-    msg: "{{token}}"

@@ -15,7 +15,6 @@
    - ping
    - update
    - jenkins
-   - generate_token
    - checkbox.io
    - iTrust
    - job_builder
