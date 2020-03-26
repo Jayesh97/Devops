@@ -21,7 +21,7 @@ The tree directory for the reference of source-code, can be obtained from
 │   │       └── mysql.yml
 ```
 
-checkpoint documentation](/checkpoint.md)
+[checkpoint documentation](/checkpoint.md)
 
 ## Scrum Meeting 1 - Date: 03/7/2020
 
