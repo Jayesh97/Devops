@@ -35,3 +35,28 @@
     state: started
     enabled: yes
     
+
+- name: Installing pip
+  become: yes
+  apt:
+    name: python3-pip
+    state: present
+
+- name: Installing pymongo Python package
+  become: yes
+  pip:
+    name: pymongo
+    state: present
+
+- name: Creating a user in mongodb
+  mongodb_user:
+    login_port: "27017"
+    database: admin
+    name: "{{MO_USR}}"
+    password: "{{MO_PASSWD}}"
+    roles: readWriteAnyDatabase
+    state: present
+  register: out
+
+- debug:
+    msg: "{{out}}"

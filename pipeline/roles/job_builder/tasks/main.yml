@@ -1,4 +1,7 @@
 ---
+- name: Generate token for Jenkins build
+  include_tasks: token.yml
+
 - name: print
   debug:
     msg: "{{hostvars['localhost']['token']}}"

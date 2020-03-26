@@ -1,0 +1,8 @@
+---
+- name: Setting up env for checkbox.io
+  include_tasks: env.yml
+- name: Install Mongo
+  include_tasks: mongo.yml
+- name: Install nodejs
+  include: node.yml
+#"{{hostvars['localhost']['token']}}"
