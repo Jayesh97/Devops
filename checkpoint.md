@@ -42,10 +42,10 @@
 
 <br/><br/>
 
-![Task progress](/Images/phase1.png)
+![Task progress](/Images/m2-c2-0.png)
 
 <br/><br/>
 
-![Final](/Images/final.PNG)
+![Final](/Images/m2-c2-1.PNG)
 
 <br/><br/>
