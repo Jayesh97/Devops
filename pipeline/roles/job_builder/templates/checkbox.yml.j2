@@ -5,18 +5,31 @@
     dsl: |
         node {
             stage('source'){
+                dir('app'){
                 git 'https://github.com/chrisparnin/checkbox.io.git'
+                }
+            }
+            stage('run analysis'){
+                git 'https://github.com/Jayesh97/static_analysis.git'
+                sh 'npm install'
+                try {
+                    sh 'node analysis.js'
+                }
+                catch(exc) {
+                    echo 'Check the console log for build failure'
+                    throw exc
+                }
             }
             stage('Setting'){
-                sh 'npm install --prefix server-side/site/'
+                sh 'npm install --prefix app/server-side/site/'
             }
             stage('change'){
-                sh 'pm2 start server-side/site/server.js'
+                sh 'pm2 start app/server-side/site/server.js'
             }
             stage('Test'){
-                sh 'npm test --prefix server-side/site/'
+                sh 'npm test --prefix app/server-side/site/'
             }
             stage('Stop'){
-                sh 'pm2 stop  server-side/site/server.js'
+                sh 'pm2 stop  app/server-side/site/server.js'
             }
         }

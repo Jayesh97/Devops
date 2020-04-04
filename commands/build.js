@@ -1,4 +1,5 @@
 require('dotenv').config();
+const chalk = require('chalk')
 var JK_USER = process.env.JK_USER;
 var JK_PASS = process.env.JK_PASS;
 const jenkins = require('jenkins')({ baseUrl: 'http://'+JK_USER+':'+JK_PASS+'@192.168.33.20:9000', crumbIssuer: true, promisify: true });
@@ -71,14 +72,14 @@ async function triggerBuild(job)
 async function main(build_name)
 {
 
-    console.log('Triggering build.')
+    console.log(chalk.blueBright('Triggering Build...'));
     let buildId = await triggerBuild(build_name).catch( e => console.log(e));
 
-    console.log(`Received ${buildId}`);
+    console.log(chalk.blueBright(`Received ${buildId}`));
     let build = await getBuildStatus(build_name, buildId);
     console.log( `Build result: ${build.result}` );
 
-    console.log(`Build output`);
+    console.log(chalk.blueBright('Build output'));
     let output = await jenkins.build.log({name: build_name, number: buildId});
     console.log( output );
 
