@@ -5,12 +5,14 @@
     dsl: |
         node {
             stage('source'){
+                sh 'cp /home/vagrant/static_analysis/analysis.js ./'
+                sh 'cp /home/vagrant/static_analysis/package.json ./'
+                sh 'cp /home/vagrant/static_analysis/file_array.js ./'
                 dir('app'){
                     git 'https://github.com/chrisparnin/checkbox.io.git'
                 }
             }
             stage('run analysis'){
-                git 'https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/sjbondu/static_analysis.git'
                 sh 'npm install'
                 try {
                     sh 'node analysis.js'
