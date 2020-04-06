@@ -16,6 +16,6 @@
    - update
    - jenkins
    - checkbox.io
-  #  - iTrust
+   - iTrust
    - job_builder
   #"{{hostvars['localhost']['token']}}"
