@@ -6,11 +6,11 @@
         node {
             stage('source'){
                 dir('app'){
-                git 'https://github.com/chrisparnin/checkbox.io.git'
+                    git 'https://github.com/chrisparnin/checkbox.io.git'
                 }
             }
             stage('run analysis'){
-                git 'https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/sjbondu/static_analysis.git
+                git 'https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/sjbondu/static_analysis.git'
                 sh 'npm install'
                 try {
                     sh 'node analysis.js'

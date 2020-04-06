@@ -5,13 +5,12 @@
   include_tasks: google-chrome.yml
 - name: Install maven 
   include: maven.yml
+
 - name: Clone the repo
   become: yes
   git:
     repo: "https://{{ git_user | urlencode }}:{{ git_pass| urlencode }}@github.ncsu.edu/engr-csc326-staff/iTrust2-v6.git"
     dest: '{{ansible_env.HOME}}/iTrust2-v6'
-    clone: no
-    update: no
 
 - name: Copy main.js
   become: yes
