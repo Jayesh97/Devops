@@ -1,2 +1,2 @@
-git_user: sjondu
-git_pass: Minato@05
+git_user: '{{GH_USER}}'
+git_pass: '{{GH_USER}}'

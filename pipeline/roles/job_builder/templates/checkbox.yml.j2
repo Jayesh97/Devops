@@ -10,7 +10,7 @@
                 }
             }
             stage('run analysis'){
-                git 'https://github.com/Jayesh97/static_analysis.git'
+                git 'https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/sjbondu/static_analysis.git
                 sh 'npm install'
                 try {
                     sh 'node analysis.js'
