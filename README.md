@@ -142,13 +142,65 @@ LOC = node.loc.end.line-node.loc.start.line
 
 ### MaxMsgChains > 10
 
-Max Message Chains are defined as the longest chain of methods been accessed on a object such as `a.b.c.d` has a message chain of 3
+Max Message Chains are defined as the longest chain of methods been accessed on a object such as `a.b.c.d` has a message chain of 3. The various cases for occurance of MaxMsgChains could be the array access, method access or a memeberaccess
+
+1. a.b.c - simple member access
+
+2. a.b[2] - array access
 
 
-
+```
+if (node.type==='MemberExpression'){ 
+    local = local + 1;
+    if (local>builder.MaxMsgChains){
+        builder.MaxMsgChains = local;
+    }
+}
+```
 
 ### MaxNestingDepth > 5
 
+This is specific to the looping statement or the IfStatement block present in the code. The parser output provides an alternate path in case of the `if` `else if` and `else` block
+
+The looping happens recursively to find the max nested depth. The functionality has been implemened by modifying the traversewithparents function to update depth every iteration it hits an new IfStatement
+
+
+```
+if (typeof child === 'object' && child !== null && key != 'parent') 
+{
+    child.parent = object;
+    if(object.type === 'IfStatement' && object.alternate === null){
+        // console.log(object.test.name)
+        depth_fn(child,depth+1)
+    }
+    else if(object.type === 'IfStatement'){
+        depth_fn(object.consequent,depth+1)
+        depth_fn(object.alternate,depth)
+    }
+    else{
+        depth_fn(child,depth)
+    }
+}
+```
+
+The report obtained after fixing the threshold values to the `{'LOC_th':100,'chains_th':10,'nesting_th':5}` show that 4 functions exceeded in the complexity test
+
+```
+
+
+LOC found "232" exceeds the threshold "100" in function "ProcessTokens" in file "app/server-side/site/marqdown.js" 
+
+
+LOC found "171" exceeds the threshold "100" in function "longMethod" in file "app/server-side/site/test/complexity/longmethod.js" 
+
+
+Max Msg chains found "11" exceeds the threshold "10" in function "chains" in file "app/server-side/site/test/complexity/nestedchains.js" 
+
+
+Nesting depth found "6" exceeds the threshold "5" in function "nested" in file "app/server-side/site/test/complexity/nestedifs.js" 
+
+
+```
 
 
 ## Scrum Meeting 2 - Date: 03/7/2020 //To be updated
