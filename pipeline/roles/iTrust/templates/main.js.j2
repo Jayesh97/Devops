@@ -76,7 +76,7 @@ class fuzzer {
         var array = val.split('\n');
 
         //pick 10 percent of lines
-        ten_percent_len = Math.floor(array.length/10)+1
+        let ten_percent_len = Math.floor(array.length/10)+1
 
         let i = 0
         var rand_index_list = []
@@ -90,10 +90,20 @@ class fuzzer {
             op = array[rand_index]      
 
             //swap == with !=
-            op = op.replace(/==/g,"!=")
+            if (op.includes("==")) {
+                op = op.replace(/==/g,"!=")
+            }
+            else if (op.includes("!=")) {
+                op = op.replace(/!=/g,"==")
+            }
             
             //swap 0 with 1
-            op = op.replace(/0/g,"1")
+            if (op.includes("0")) {
+                op = op.replace(/0/g,"1")
+            }
+            else if (op.includes("1")) {
+                op = op.replace(/1/g,"0")
+            }
 
             //swap < with >
 
@@ -117,11 +127,10 @@ class fuzzer {
             if (op.includes("&&")){
                 op = op.replace(/&&/g,"||")
             }
-            else if (op.includes("--")){
+            else if (op.includes("||")){
                 op = op.replace(/\|\|/g,"&&")
             }
             
-
             //swap + with -
             if (op.includes("++")){
                 op = op.replace("++","--")
@@ -130,7 +139,17 @@ class fuzzer {
                 op = op.replace("--","++")
             }
             
-            op = op.replace("\"w+\"","\"replaced\"")
+            var op_array = []
+            // op = op.replace("\"w+\"","\"replaced\"")
+            op_array = op.split(" ")
+            op_array.forEach(function(word, index){
+               if (typeof(word) == 'string'){
+                    if((word.startsWith('\'') && word.endsWith('\'')) || (word.startsWith('\"') && word.endsWith('\"'))){
+                        op_array[index] = word.split('').reverse().join('');
+                    }
+                }
+            });
+            op = op_array.join(" ")
 
             array[rand_index] = op
             i++
@@ -144,7 +163,7 @@ class fuzzer {
 function randomize(f_list){
 
     let random_set = new Set()
-    ten_percent_len = Math.floor(f_list.length/10)+1
+    let ten_percent_len = Math.floor(f_list.length/10)+1
     let i = 0
     while(i < ten_percent_len) {
         op = f_list[Math.floor(Math.random() * f_list.length)]
