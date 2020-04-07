@@ -1,6 +1,46 @@
 # Milestone 2
 
+## Checkpoint-2
 
+<p></p>
+
+## User Stories Checkpoint-2
+
+|Checkpoint|Issue Number|Issue Name                              |Task                                                         |Estimate|Assignees        |Completed|FIELD8|
+|----------|------------|----------------------------------------|-------------------------------------------------------------|--------|-----------------|---------|------|
+|2         |28          |Static Analysis                         |Writing a DFS custom function to traverse the ast            |2       |lKhuran          |Completed|      |
+|          |            |                                        |Modify traversewithparents() function to support dfs function|        |                 |         |      |
+|          |            |                                        |                                                             |        |                 |         |      |
+|2         |29          |Checkbox.io Fix                         |Implementing Try-Catch block in Jenkins                      |1       |sjbondu          |Completed|      |
+|          |            |                                        |                                                             |        |                 |         |      |
+|2         |30          |Metric Threshold and Logging Error Setup|Setup Thresholds for LOC, MaxNestingDepth, MaxMsgChains      |3       |vpmaddur, sjbondu|Completed|      |
+|          |            |                                        |Output the functions exceeding thresholds of metrics         |        |                 |         |      |
+|          |            |                                        |Implementing error login to exit the code, failing build     |        |                 |         |      |
+
+
+
+
+<p></p>
+
+<br/><br/>
+
+
+#### Sprint Summary Planning Checkpoint-2
+
+* Setting up environment and necessary dependencies for iTrust App
+* Creating a pipeline and passing tokens to the iTrust App
+* Verifying maven build and test stages
+
+
+<br/><br/>
+
+![Task progress](/Images/m2-c2-0.png)
+
+<br/><br/>
+
+![Final](/Images/m2-c2-1.PNG)
+
+<br/><br/>
 
 ## Checkpoint-1 
 
