@@ -34,11 +34,15 @@
 
 <br/><br/>
 
-![Task progress](/Images/m2-c2-0.png)
+![Task progress](/Images/m2-1.png)
 
 <br/><br/>
 
-![Final](/Images/m2-c2-1.PNG)
+![Task progress](/Images/m2-2.png)
+
+<br/><br/>
+
+![Final](/Images/m2-3.png)
 
 <br/><br/>
 
@@ -87,6 +91,6 @@
 
 <br/><br/>
 
-![Final](/Images/m2-c2-1.PNG)
+![Final](/Images/m2-c2-1.png)
 
 <br/><br/>
