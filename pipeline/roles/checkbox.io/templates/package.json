@@ -1,5 +1,5 @@
 {
-    "name": "Analysis",
+    "name": "analysis",
     "version": "0.0.1",
     "description": "Static and dynamic analysis",
     "main": "analysis.js",

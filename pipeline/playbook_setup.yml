@@ -18,4 +18,3 @@
    - checkbox.io
    - iTrust
    - job_builder
-  #"{{hostvars['localhost']['token']}}"
