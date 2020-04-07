@@ -14,7 +14,7 @@
 
 - name: Clone the repo
   git:
-    repo: "https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v6.git"
+    repo: "https://{{GH_USER | urlencode }}:{{GH_PASS | urlencode}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v6.git"
     dest: '{{ansible_env.HOME}}/iTrust2-v6'
 
 - name: Copy Fuzzer logic (main.js)
