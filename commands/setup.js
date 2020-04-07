@@ -28,13 +28,13 @@ exports.builder = yargs => {
         'gh-user': {
             describe: 'Github Username',
             type: 'string',
-            default: process.env.GH_USER,
+            default: "",
             nargs: 1
         },
         'gh-pass': {
             describe: 'Github Password',
             type: 'string',
-            default: process.env.GH_PASS,
+            default: "",
             nargs: 1
         }
 
@@ -43,12 +43,12 @@ exports.builder = yargs => {
 
 
 exports.handler = async argv => {
-    const { privateKey, vaultfilePath, gh_user, gh_pass } = argv;
+    const { privateKey, vaultfilePath, ghUser, ghPass } = argv;
+    
     (async () => {
-
         await run( privateKey );
         if (fs.existsSync(path.resolve('pipeline/playbook_setup.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini')) && !process.env.GH_USER && !process.env.GH_PASS) {
-            await jenkins_setup('pipeline/playbook_setup.yml', 'pipeline/inventory.ini', vaultfilePath, gh_user, gh_pass);
+            await jenkins_setup('pipeline/playbook_setup.yml', 'pipeline/inventory.ini', vaultfilePath, ghUser, ghPass);
         }
 
         else {
@@ -68,7 +68,7 @@ async function run(privateKey) {
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
     console.log(chalk.blueBright('Provisioning jenkins server...'));
-    result = child.spawnSync(`bakerx`, `run jenkins-srv bionic --ip 192.168.33.20 --memory 4096`.split(' '), {shell:true, stdio: 'inherit'} );
+    result = child.spawnSync(`bakerx`, `run jenkins-srv bionic --ip 192.168.33.20 --memory 2048`.split(' '), {shell:true, stdio: 'inherit'} );
     if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
     console.log(chalk.blueBright('Installing privateKey on configuration server'));
