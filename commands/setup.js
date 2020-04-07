@@ -25,13 +25,13 @@ exports.builder = yargs => {
             default: 'pipeline/password/jenkins',
             nargs: 1
         },
-        gh_user: {
+        'gh-user': {
             describe: 'Github Username',
             type: 'string',
             default: process.env.GH_USER,
             nargs: 1
         },
-        gh_pass: {
+        'gh-pass': {
             describe: 'Github Password',
             type: 'string',
             default: process.env.GH_PASS,

@@ -2,6 +2,9 @@
 - name: Generate token for Jenkins build
   include_tasks: token.yml
 
+- name: Create credentials in Jenkins
+  include_tasks: credentials.yml
+
 - name: Installing jenkins job builder
   become: yes
   apt:
