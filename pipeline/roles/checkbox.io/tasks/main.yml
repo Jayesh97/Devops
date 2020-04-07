@@ -16,7 +16,7 @@
   become: yes
   template:
     src: analysis.js.j2
-    dest: /home/vagrant/static_analysis/
+    dest: /home/vagrant/static_analysis/analysis.js
     mode: 0755
     owner: jenkins
 
@@ -24,7 +24,7 @@
   become: yes
   template:
     src: file_array.js.j2
-    dest: /home/vagrant/static_analysis/
+    dest: /home/vagrant/static_analysis/file_array.js
     mode: 0755
     owner: jenkins
   
