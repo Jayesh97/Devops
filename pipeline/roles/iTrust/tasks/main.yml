@@ -1,53 +1,9 @@
 ---
 - name: Install MySQL
-  include_tasks: mysql.yml
+  include: mysql.yml
 - name: Install Google Chrome
-  include_tasks: google-chrome.yml
+  include: google-chrome.yml
 - name: Install maven 
   include: maven.yml
-
-- name: Clone the repo
-  become: yes
-  git:
-    repo: "https://{{ git_user | urlencode }}:{{ git_pass| urlencode }}@github.ncsu.edu/engr-csc326-staff/iTrust2-v6.git"
-    dest: '{{ansible_env.HOME}}/iTrust2-v6'
-
-- name: Copy main.js
-  become: yes
-  template:
-    src: main.js.j2
-    dest: '{{ansible_env.HOME}}/main.js'
-    mode: 0755
-    owner: jenkins
-  
-
-- name: Copy package.jsom
-  become: yes
-  template:
-    src: package.json
-    dest: '{{ansible_env.HOME}}/package.json'
-    mode: 0755
-    owner: jenkins
-
-- name: Install node modules
-  become: yes
-  npm:
-    path: '{{ansible_env.HOME}}'
-    state: latest
-
-
-- name: copy db.properties
-  become: yes
-  template:
-    src: db.properties.j2
-    dest: '{{ansible_env.HOME}}/iTrust2-v6/iTrust2/src/main/java/db.properties'
-    mode: 0755
-    owner: jenkins
-
-- name: copy email.properties
-  become: yes
-  template:
-    src: email.properties.j2
-    dest: '{{ansible_env.HOME}}/iTrust2-v6/iTrust2/src/main/java/email.properties'
-    mode: 0755
-    owner: jenkins
+- name: Configure Fuzzer
+  include: fuzzing.yml

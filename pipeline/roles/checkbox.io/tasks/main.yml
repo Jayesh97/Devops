@@ -1,39 +1,9 @@
 ---
 - name: Setting up env for checkbox.io
-  include_tasks: env.yml
+  include: env.yml
 - name: Install Mongo
-  include_tasks: mongo.yml
+  include: mongo.yml
 - name: Install nodejs
   include: node.yml
-
-- name: Crate a directory
-  file:
-    path: /home/vagrant/static_analysis
-    state: directory
-    mode: '0755'
-  
-- name: Push analysis.js
-  become: yes
-  template:
-    src: analysis.js.j2
-    dest: /home/vagrant/static_analysis/analysis.js
-    mode: 0755
-    owner: jenkins
-
-- name: Push file_array.js
-  become: yes
-  template:
-    src: file_array.js.j2
-    dest: /home/vagrant/static_analysis/file_array.js
-    mode: 0755
-    owner: jenkins
-  
-
-- name: push package.json
-  become: yes
-  template:
-    src: package.json
-    dest: /home/vagrant/static_analysis/
-    mode: 0755
-    owner: jenkins
-#"{{hostvars['localhost']['token']}}"
+- name: Analysis
+  include: analysis.yml

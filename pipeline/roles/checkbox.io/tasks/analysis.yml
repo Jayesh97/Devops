@@ -1,0 +1,30 @@
+---
+- name: Create a directory
+  file:
+    path: /home/vagrant/static_analysis
+    state: directory
+    mode: '0755'
+
+- name: Push analysis.js
+  become: yes
+  template:
+    src: analysis.js.j2
+    dest: /home/vagrant/static_analysis/analysis.js
+    mode: 0755
+    owner: jenkins
+
+- name: Push file_array.js
+  become: yes
+  template:
+    src: file_array.js.j2
+    dest: /home/vagrant/static_analysis/file_array.js
+    mode: 0755
+    owner: jenkins
+
+- name: push package.json
+  become: yes
+  template:
+    src: package.json
+    dest: /home/vagrant/static_analysis/
+    mode: 0755
+    owner: jenkins

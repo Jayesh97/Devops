@@ -1,7 +1,7 @@
 {
-    "name": "fuzz",
+    "name": "fuzzer",
     "version": "1.0.0",
-    "description": "fuzz-workshop",
+    "description": "fuzzing",
     "main": "main.js",
     "scripts": {
       "test": "cross-env NODE_ENV=test mocha --reporter spec"
@@ -17,12 +17,15 @@
       "random-js": "^2.1.0",
       "stack-trace": "0.0.9",
       "stacktrace-parser": "^0.1.1",
-      "underscore": "^1.9.2"
+      "underscore": "^1.9.2",
+      "bluebird": "^3.5.0",
+      "xml2js": "^0.4.17"
     },
     "dependencies": {
       "chai": "^4.1.2",
       "mocha": "^3.5.0",
       "pug": "^2.0.4",
-      "shelljs": "0.8.3"
+      "chair": "0.0.0",
+      "cross-env": "^5.1.3"
     }
   }
