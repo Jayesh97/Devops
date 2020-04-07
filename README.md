@@ -6,6 +6,8 @@ Testing includes mutation testing on iTrust Application and then performing stat
 
 [checkpoint documentation](/checkpoint.md)
 
+[Screencast link](https://drive.google.com/file/d/1B10rkI0n8Q0MVUGrwBHa6d_Uj3VwjqYB/view?usp=sharing)
+
 # Setup Procedure
 
 

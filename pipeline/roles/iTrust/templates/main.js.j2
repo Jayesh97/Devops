@@ -6,6 +6,7 @@ var fs = require('fs'),
     child  = require('child_process'); 
 var parser = new xml2js.Parser();
 var Bluebird = require('bluebird')
+const mysql = require('mysql2/promise')
 
 var finalResult ={};
 
@@ -60,20 +61,6 @@ async function calculatePriority()
     }
 }
 
-// function traverse_with_dir(dir_path, result) {
-//   files = fs.readdirSync(dir_path)
-//   result = result
-//   files.forEach(function(file) {
-//     if (fs.statSync(dir_path + "/" + file).isDirectory()) {
-//         result = traverse_with_dir(dir_path + "/" + file, result)
-//     } 
-//     else{
-//             result.push(path.join(dir_path, "/", file))
-//         }
-//   })
-//   return result
-// }
-
 class fuzzer {
     static random() {
         return fuzzer._random || fuzzer.seed(0)
@@ -100,7 +87,7 @@ class fuzzer {
             if(rand_index_list.includes(rand_index)){
                 continue
             }
-            op = array[rand_index]
+            op = array[rand_index]      
 
             //swap == with !=
             op = op.replace(/==/g,"!=")
@@ -109,17 +96,41 @@ class fuzzer {
             op = op.replace(/0/g,"1")
 
             //swap < with >
-            // op = op.replace(/</g,">")
+
+            if (op.includes(" < ")){
+                op = op.replace(/ < /g," > ")
+            }
+            else if(op.includes(" > ")){
+                op = op.replace(/ > /g," < ")
+            }
+
+
+            if (op.includes(">=")){
+                op = op.replace(">=","<=")
+            }
+            else if (op.includes("<=")){
+                op = op.replace("<=",">=")
+            }
+
 
             //swap && with ||
-            op = op.replace(/&&/g,"||")
+            if (op.includes("&&")){
+                op = op.replace(/&&/g,"||")
+            }
+            else if (op.includes("--")){
+                op = op.replace(/\|\|/g,"&&")
+            }
+            
 
             //swap + with -
-            op = op.replace("++","--")
-
-            //match strings and replace with ""
-            // op = op.replace(/"\w+"/i,"replaced")
-
+            if (op.includes("++")){
+                op = op.replace("++","--")
+            }
+            else if (op.includes("--")){
+                op = op.replace("--","++")
+            }
+            
+            op = op.replace("\"w+\"","\"replaced\"")
 
             array[rand_index] = op
             i++

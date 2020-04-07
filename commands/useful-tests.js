@@ -23,7 +23,7 @@ exports.handler = async argv => {
 };
 
 async function testAnalysis(c) {
-    console.log(chalk.blueBright('Running Useful tests ...'));
+    console.log(chalk.blueBright(`Running Useful tests for ${c} time(s)...`));
     let result = sshSync(`node main.js ${c}`, 'vagrant@192.168.33.20');
     if( result.error ) { process.exit( result.status ); }
 
