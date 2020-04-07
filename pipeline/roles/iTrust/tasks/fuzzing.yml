@@ -13,7 +13,6 @@
     state: link
 
 - name: Clone the repo
-  become: yes
   git:
     repo: "https://{{GH_USER}}:{{GH_PASS}}@github.ncsu.edu/engr-csc326-staff/iTrust2-v6.git"
     dest: '{{ansible_env.HOME}}/iTrust2-v6'
@@ -23,16 +22,12 @@
   template:
     src: main.js.j2
     dest: '{{ansible_env.HOME}}/main.js'
-    mode: 0755
-    owner: jenkins
 
 - name: Copy package.json
   become: yes
   template:
     src: package.json
     dest: '{{ansible_env.HOME}}/package.json'
-    mode: 0755
-    owner: jenkins
 
 - name: Install node modules based on package.json
   become: yes
@@ -44,13 +39,9 @@
   template:
     src: db.properties.j2
     dest: '{{ansible_env.HOME}}/iTrust2-v6/iTrust2/src/main/java/db.properties'
-    mode: 0755
-    owner: jenkins
 
 - name: copy email.properties
   become: yes
   template:
     src: email.properties.j2
     dest: '{{ansible_env.HOME}}/iTrust2-v6/iTrust2/src/main/java/email.properties'
-    mode: 0755
-    owner: jenkins
