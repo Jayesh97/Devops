@@ -88,12 +88,13 @@
   become: yes
   jenkins_plugin:
     name: "{{item.name}}"
-    version: "{{item.version}}"
+    state: latest
     url_username: "{{JK_USR}}"
     url_password: "{{JK_PASSWD}}"
     url: http://192.168.33.20:9000
   with_items:
     - "{{jenkins_plugins}}"
+  ignore_errors: true
 
 - name: restart jenkins
   become: yes
