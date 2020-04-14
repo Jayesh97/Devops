@@ -1,23 +1,44 @@
-# Milestone 2
+# Milestone 3
 
-## Checkpoint-2
+## Checkpoint-1
 
 <p></p>
 
-## User Stories Checkpoint-2
+## User Stories Checkpoint-1
 
-|Checkpoint|Issue Number|Issue Name                              |Task                                                         |Estimate|Assignees        |Completed|FIELD8|
-|----------|------------|----------------------------------------|-------------------------------------------------------------|--------|-----------------|---------|------|
-|2         |28          |Static Analysis                         |Writing a DFS custom function to traverse the ast            |2       |lKhuran          |Completed|      |
-|          |            |                                        |Modify traversewithparents() function to support dfs function|        |                 |         |      |
-|          |            |                                        |                                                             |        |                 |         |      |
-|2         |29          |Checkbox.io Fix                         |Implementing Try-Catch block in Jenkins                      |1       |sjbondu          |Completed|      |
-|          |            |                                        |                                                             |        |                 |         |      |
-|2         |30          |Metric Threshold and Logging Error Setup|Setup Thresholds for LOC, MaxNestingDepth, MaxMsgChains      |3       |vpmaddur, sjbondu|Completed|      |
-|          |            |                                        |Output the functions exceeding thresholds of metrics         |        |                 |         |      |
-|          |            |                                        |Implementing error login to exit the code, failing build     |        |                 |         |      |
-
-
+|            |              |                              |                                                                             |          |                  |           | 
+|------------|--------------|------------------------------|-----------------------------------------------------------------------------|----------|------------------|-----------| 
+| Checkpoint | Issue Number | Issue Name                   | Task                                                                        | Estimate | Assignees        | Completed | 
+| 1          | 32           | Pipeline Prod                | Generate Keys                                                               | 7        | vpmaddur         |           | 
+|            |              |                              | Copy keys to Ansible server and Droplets(digital ocean)                     |          |                  |           | 
+|            |              |                              | Provision droplets                                                          |          |                  |           | 
+|            |              |                              | Create firewall rules to open port to the Redis server                      |          |                  |           | 
+|            |              |                              | Copy node js files to the Monitoring server                                 |          |                  |           | 
+|            |              |                              | Copy index.js and server.js files to Application servers                    |          |                  |           | 
+|            |              |                              | Write playbooks to install Redis                                            |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 1          | 33           | Populating Inventory.ini     | Function to populate inventory.ini from the obtained droplet IPs            | 2        | sjbondu          |           | 
+|            |              |                              | Updating inventory with appropriate keys, host vars and target groups       |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 1          | 34           | Pipeline prod-up Idempotency | Logic of using Env variable to keep count of prod.js initial execution      | 2        | lkhuran          |           | 
+|            |              |                              | Functions updates on runnig the pipeline prod up multiple times             |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 1          | 35           | Checkpoint-1 Documentation   | Checkpoint-1 Documentation                                                  | 1        | sjbondu          |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 1          | 36           | Fixing M2 corner cases       | Enhancing run-ansible.sh to support multiple scripts                        | 4        | sjbondu, lkhuran |           | 
+|            |              |                              | Handling default values for ansible playbooks                               |          |                  |           | 
+|            |              |                              | Shortening list of Jenkins plugins                                          |          |                  |           | 
+|            |              |                              | Enabling --gh-pass to support special                                       |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 2          | 37           | Provide deploy command       | Include deploy.js to deploy applications in the production servers          | 2        | lkhuran          |           | 
+|            |              |                              | Setup production environment on application servers based on inventory file |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 2          | 38           | Deploy checkbox.io           | Update HTML pages of nginx to support checkbox.io                           | 2        | sjbondu          |           | 
+|            |              |                              | Replacing configurations of nginx - default.conf                            |          |                  |           | 
+|            |              |                              |                                                                             |          |                  |           | 
+| 2          | 39           | Deploy iTrust                | Create environment for iTrust                                               | 2        | vpmaddur         |           | 
+|            |              |                              | Deploy the .war file and TomCat webserver                                   |          |                  |           | 
 
 
 <p></p>
@@ -27,70 +48,17 @@
 
 #### Sprint Summary Planning Checkpoint-2
 
-* Setting up environment and necessary dependencies for iTrust App
-* Creating a pipeline and passing tokens to the iTrust App
-* Verifying maven build and test stages
+* Setting up environment and necessary dependencies for production environment
+* Enabling redis acccess and creating monitoring scripts to pass application information
+* Provide `pipeline prod up` and `pipeline deploy <name>` commands
 
 
 <br/><br/>
 
-![Task progress](/Images/m2-1.png)
+![Task progress](/Images/m3-1.png)
 
 <br/><br/>
 
-![Task progress](/Images/m2-2.png)
-
-<br/><br/>
-
-![Final](/Images/m2-3.png)
-
-<br/><br/>
-
-## Checkpoint-1 
-
-<p></p>
-
-## User Stories Checkpoint-1 
-
-|            |              |                     |                                                                      |          |                   |           | 
-|------------|--------------|---------------------|----------------------------------------------------------------------|----------|-------------------|-----------| 
-| Checkpoint | Issue Number | Issue Name          | Task                                                                 | Estimate | Assignees         | Completed | 
-| 1          | 21           | Debugging           | Enable tags                                                          | 2        | vpmaddur          | Completed | 
-|            |              |                     | Enable debug mode                                                    |          |                   |           | 
-|            | 22           | Build iTrust        | Create role for iTrust                                               | 6        | vpmaddur, sjbondu | Completed | 
-|            |              |                     | Accept build_name as variable in pipeline build <build_name>         |          |                   |           | 
-|            |              |                     | Install maven on Jenkins server                                      |          |                   |           | 
-|            |              |                     | Install mysql                                                        |          |                   |           | 
-|            |              |                     | Install Google chrome                                                |          |                   |           | 
-|            |              |                     | Write pipeline for iTrust                                            |          |                   |           | 
-| 1          | 23           | Pipeline setup      | Change setup.js to accept Github Username and Password               | 3        | vpmaddur, lkhuran | Completed | 
-|            |              |                     | Change run-ansible.sh to pass extra-args to ansible-playbook command |          |                   |           | 
-|            |              |                     | Create a token in GitHub and add the variables in .bashrc            |          |                   |           | 
-| 1          | 24           | Test suite analysis | Test suite analysis                                                  | 1        | lkhuran           | Completed | 
-|            |              |                     |                                                                      |          |                   |           | 
-| 1          | 25           | Static Analysis     | Static Analysis                                                      | 1        | sjbondu           | Completed | 
-|            |              |                     |                                                                      |          |                   |           | 
-| 1          | 26           | Documentation       | Documentation                                                        | 1        | sjbondu           | Completed | 
-
-
-<p></p>
-
-<br/><br/>
-
-
-#### Sprint Summary Planning Checkpoint-1
-
-* Setting up environment and necessary dependencies for iTrust App
-* Creating a pipeline and passing tokens to the iTrust App
-* Verifying maven build and test stages
-
-
-<br/><br/>
-
-![Task progress](/Images/m2-c2-0.png)
-
-<br/><br/>
-
-![Final](/Images/m2-c2-1.png)
+![Final](/Images/m3-2.png)
 
 <br/><br/>
