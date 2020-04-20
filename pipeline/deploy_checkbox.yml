@@ -3,7 +3,7 @@
 # https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
 
 
-- hosts: jenkins
+- hosts: checkbox.io
   pre_tasks:
   - name: Loading the variables
     include_vars:
@@ -14,7 +14,4 @@
   roles:
    - ping
    - update
-  #  - jenkins
    - checkbox.io
-  #  - iTrust
-  #  - job_builder
