@@ -1,0 +1,12 @@
+
+- hosts: cloud
+  roles:
+   - ping
+   - update
+   - monitor
+
+- hosts: servers
+  roles:
+    - ping
+    - update
+    - server

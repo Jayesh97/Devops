@@ -1,0 +1,79 @@
+---
+- name: Create a Dashboard if it does not exist
+  file:
+    path: '{{ansible_env.HOME}}/dashboard'
+    state: directory
+   
+- name: Create a sub directories in Dashboard if they does not exist
+  file:
+    path: '{{ansible_env.HOME}}/dashboard/{{item}}'
+    state: directory
+  with_items:
+    - bin
+    - www
+    - metrics
+
+- name: Copy www file into dashboard/bin folder
+  template:
+    src: www.j2
+    dest: '{{ansible_env.HOME}}/dashboard/bin/www'
+
+- name: Copy index.js to dashboard/metrics folder
+  template:
+    src: index.js.j2
+    dest: '{{ansible_env.HOME}}/dashboard/metrics/index.js'
+
+- name: Copy statusModel.js into dashboard/www folder
+  template:
+    src: statusModel.js.j2
+    dest: '{{ansible_env.HOME}}/dashboard/www/statusModel.js'
+
+- name: Copy index.html into dashboard/www folder
+  copy:
+    src: index.html
+    dest: '{{ansible_env.HOME}}/dashboard/www/index.html'
+
+- name: Copy package.json
+  template:
+    src: package.json
+    dest: '{{ansible_env.HOME}}/dashboard/package.json'
+
+- name: Install node
+  include_role: 
+    name: checkbox.io
+    tasks_from: node
+
+- name: Install node modules based on package.json
+  become: yes
+  npm:
+    path: '{{ansible_env.HOME}}/dashboard'
+
+- name: Copy app.js
+  template:
+    src: app.js.j2
+    dest: '{{ansible_env.HOME}}/dashboard/app.js'
+
+- name: Install Redis server
+  become: yes
+  apt:
+    name: redis-server
+    state: latest
+
+- name: Change redis listening IP Address
+  lineinfile:
+    path: /etc/redis/redis.conf
+    regexp: '^bind 127.0.0.1 ::1'
+    line: "bind 127.0.0.1 ::1 {{hostvars['monitor']['ansible_host']}}"
+
+- name: Restart Redis
+  systemd:
+    name: redis-server
+    state: restarted
+
+- name: Start the dashboard
+  shell:
+    cmd: node bin/www &
+  args:
+    chdir: '{{ansible_env.HOME}}/dashboard'
+  async: 45
+  poll: 0

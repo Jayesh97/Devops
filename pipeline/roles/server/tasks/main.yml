@@ -1,0 +1,44 @@
+---
+- name: Create an Agent directory if it does not exist
+  file:
+    path: '{{ansible_env.HOME}}/agent'
+    state: directory
+
+- name: Copy package.json
+  template:
+    src: package.json
+    dest: '{{ansible_env.HOME}}/agent/package.json'
+
+- name: Install node
+  include_role: 
+    name: checkbox.io
+    tasks_from: node
+
+- name: Install node modules based on package.json
+  become: yes
+  npm:
+    path: '{{ansible_env.HOME}}/agent'
+
+- name: Copy index.js and server.js into /agent folder
+  template:
+    src: '{{item}}.j2'
+    dest: '{{ansible_env.HOME}}/agent/{{item}}'
+  with_items:
+    - index.js
+    - server.js
+
+- name: Start index.js to fetch CPU and Memory Metrics
+  shell:
+    cmd: node index.js {{ansible_hostname}} &
+  args:
+    chdir: '{{ansible_env.HOME}}/agent'
+  async: 45
+  poll: 0
+
+- name: Start server.js to fetch HTTP Response and Latency Metrics
+  shell:
+    cmd: node server.js &
+  args:
+    chdir: '{{ansible_env.HOME}}/agent'
+  async: 45
+  poll: 0
