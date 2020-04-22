@@ -57,8 +57,6 @@ async function main(deploy_name)
         let filePath = '/bakerx/pipeline/deploy_checkbox.yml';
         let inventoryPath = '/bakerx/pipeline/inventory.ini';	
         let vaultfilePath = '/bakerx/pipeline/password/jenkins';
-        let gh_user = "";
-        let gh_pass = "";
         let result = sshSync(`ansible-playbook --vault-password-file ${vaultfilePath} ${filePath} -i ${inventoryPath}`, 'vagrant@192.168.33.10');
         if( result.error ) { process.exit( result.status ); }
 

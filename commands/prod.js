@@ -183,7 +183,33 @@ class DigitalOceanProvider
             await sleep(5000);
 
         } while (!ipAddress);	
+    }
+    
+    async deleteDroplet(id)
+	{
+		if( typeof id != "number" )
+		{
+			console.log( chalk.red("You must provide an integer id for your droplet!") );
+			return;
+		}
+
+		// HINT, use the DELETE verb.
+		let response = await got.delete(`https://api.digitalocean.com/v2/droplets/${id}`, {headers:headers,json:true})
+		.catch( err => 
+			console.error(chalk.red(`DeleteDroplets: ${err}`)) 
+		);
+
+		if( !response ) return;
+
+		// No response body will be sent back, but the response code will indicate success.
+		// Specifically, the response code will be a 204, which means that the action was successful with no returned body data.
+		if(response.statusCode == 204)
+		{
+			console.log(`Deleted droplet ${id}`);
+		}
+
 	}
+
 };
 
 async function provision(dropletName, keyID)
@@ -324,11 +350,44 @@ async function monitor(file, inventory, vaultfilePath, gh_user, gh_pass) {
     if( result.error ) { process.exit( result.status ); }
 }
 
+async function populate_inventory(monIP,S1IP,S2IP){
+
+    let stringify = fs.readFileSync(__dirname+'/../pipeline/inventory.ini','utf-8');
+
+    let cloud_inventory = 
+`
+[cloud]
+monitor ansible_host=${monIP}   ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root\n
+[cloud:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_python_interpreter=/usr/bin/python3
+
+[servers]
+server-01 ansible_host=${S1IP}  ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root
+server-02 ansible_host=${S2IP}  ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root
+[servers:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_python_interpreter=/usr/bin/python3
+`
+
+    stringify = stringify + "\n" + cloud_inventory
+
+    fs.writeFileSync(__dirname+'/../pipeline/inventory.ini',stringify)
+
+}
+
 exports.handler = async argv => {
     const { action } = argv;
 
     (async () => {
 
+        let stringify = fs.readFileSync(__dirname+'/../pipeline/inventory.ini','utf-8');
+        
+        if(stringify.includes('cloud')&&stringify.includes('servers')){
+            throw console.error("servers already created");
+        }
+        //Checking if production servers already exits
+        
         if (!fs.existsSync(path.resolve(`${process.env.HOME}/.ssh/DEVOPS-04.pub`))) {
             await keyGeneration();
         }
@@ -347,7 +406,16 @@ exports.handler = async argv => {
         var S1IP = await client.dropletInfo(ser1ID);
         var S2IP = await client.dropletInfo(ser2ID);
 
+        await populate_inventory(monIP,S1IP,S2IP)
+
+        const sleep = (milliseconds) => {
+            return new Promise(resolve => setTimeout(resolve, milliseconds))
+          }
+
+        await sleep(45000);
+
         await firewall(monID, ser1ID, ser2ID, monIP, S1IP, S2IP);
+
         if (fs.existsSync(path.resolve('pipeline/playbook_monitor.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini')) && !process.env.GH_USER && !process.env.GH_PASS) {
             await monitor('pipeline/playbook_monitor.yml', 'pipeline/inventory.ini', 'pipeline/password/jenkins', `${process.env.GH_USER}`, `${process.env.GH_PASS}`);
         }
@@ -355,6 +423,10 @@ exports.handler = async argv => {
         else {
             console.error(`Playbook or inventory don't exist. Environmental Variables not set`);
         }
+
+        // await client.deleteDroplet(monID)
+        // await client.deleteDroplet(ser1ID)
+        // await client.deleteDroplet(ser2ID)
 
     })();
 };

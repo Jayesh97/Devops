@@ -3,7 +3,7 @@
 # https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
 
 
-- hosts: checkbox.io
+- hosts: servers[0]
   pre_tasks:
   - name: Loading the variables
     include_vars:
@@ -14,4 +14,4 @@
   roles:
    - ping
    - update
-   - checkbox.io
+   - deploy_checkbox

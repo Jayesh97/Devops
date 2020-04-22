@@ -1,0 +1,16 @@
+---
+
+- name: Install node
+  include_role: 
+    name: checkbox.io
+    tasks_from: node
+
+- name: Install Mongo
+  include_role: 
+    name: checkbox.io
+    tasks_from: mongo
+
+- name: install env variables
+  include_role: 
+    name: checkbox.io
+    tasks_from: env
