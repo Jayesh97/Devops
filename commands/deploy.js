@@ -15,7 +15,7 @@ exports.builder = yargs => {
         inventory:{
             describe: 'location of inventory file',
             type: 'string',
-            default: 'pipeline/inventory.ini',
+            default: 'inventory.ini',
         },
         vaultfilePath: {
             alias: 'vp',

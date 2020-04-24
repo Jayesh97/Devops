@@ -7,6 +7,8 @@ The architecture consists of 3 servers
 2. Checkbox - Server for deploying Checkbox.io application
 3. iTrust - The server in which iTrust application would be deployed
 
+[checkpoint documentation](/checkpoint.md)
+
 ## Setup and Procedure
 
 For spanning the production servers and make them ready for deploying the applications use the following steps
@@ -23,10 +25,11 @@ pipeline prod up
 
 This would span the droplets in the Digital Ocean. The inventories are populated with the newly spanned droplet IPs and the SSH key which is generated during the script 
 
+Another command has also been added to support destroying the infrastructure 
 
-
-
-[checkpoint documentation](/checkpoint.md)
+```
+pipeline prod destroy
+```
 
 
 ## Scrum Meeting 1 - Date: 04/15/2020

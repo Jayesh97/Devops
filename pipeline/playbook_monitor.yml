@@ -1,12 +1,18 @@
 
-- hosts: cloud
+- hosts: monitor
   roles:
    - ping
-   - update
-   - monitor
+  #  - update
+  #  - monitor
 
-- hosts: servers
+- hosts: checkbox.io
   roles:
     - ping
-    - update
-    - server
+    # - update
+    # - server
+
+- hosts: iTrust
+  roles:
+    - ping
+    # - update
+    # - server

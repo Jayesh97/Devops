@@ -7,12 +7,14 @@ const { exec } = require("child_process");
 const fs = require('fs');
 const path = require('path');
 
+//863337ecf88f8733fc43913b5c7592a6dcb0b27586b1b5d23dccd1b6cd80bd25
+
 exports.command = 'prod <action>';
 exports.desc = 'Provision cloud instances and control plane.';
 exports.builder = yargs => {
     yargs.options({
         action:{
-            describe: 'Name of the job to be triggered',
+            describe: "Action on infra \'up\' or \'destroy\'",
             type: 'string',
             default: 'up'
         }
@@ -352,27 +354,101 @@ async function monitor(file, inventory, vaultfilePath, gh_user, gh_pass) {
 
 async function populate_inventory(monIP,S1IP,S2IP){
 
-    let stringify = fs.readFileSync(__dirname+'/../pipeline/inventory.ini','utf-8');
-
     let cloud_inventory = 
 `
-[cloud]
-monitor ansible_host=${monIP}   ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root\n
-[cloud:vars]
+[monitor]
+${monIP}   ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root\n
+[monitor:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_python_interpreter=/usr/bin/python3
 
-[servers]
-server-01 ansible_host=${S1IP}  ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root
-server-02 ansible_host=${S2IP}  ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root
-[servers:vars]
+[checkbox.io]
+${S1IP}  ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root
+[checkbox.io:vars]
+ansible_ssh_common_args='-o StrictHostKeyChecking=no'
+ansible_python_interpreter=/usr/bin/python3
+
+[iTrust]
+${S2IP}  ansible_ssh_private_key_file=~/.ssh/DEVOPS-04   ansible_user=root
+[iTrust:vars]
 ansible_ssh_common_args='-o StrictHostKeyChecking=no'
 ansible_python_interpreter=/usr/bin/python3
 `
 
-    stringify = stringify + "\n" + cloud_inventory
+    fs.writeFileSync(__dirname+'/../inventory.ini',cloud_inventory);
 
-    fs.writeFileSync(__dirname+'/../pipeline/inventory.ini',stringify)
+
+}
+
+
+async function setup_infra(){
+
+    if (!fs.existsSync(path.resolve(`${process.env.HOME}/.ssh/DEVOPS-04.pub`))) {
+        await keyGeneration();
+    }
+    let client = new DigitalOceanProvider();
+    var keyID = await client.createKey();
+    copyKey();
+
+    var monID = await provision("monitor", keyID);
+    var ser1ID = await provision("checkbox.io", keyID);
+    var ser2ID = await provision("iTrust", keyID)
+
+    var monIP = await client.dropletInfo(monID);
+    var S1IP = await client.dropletInfo(ser1ID);
+    var S2IP = await client.dropletInfo(ser2ID);
+
+    //save to dropconfig.json
+    var obj = {
+        'monitor_id': monID,
+        'checkbox_id': ser1ID,
+        'iTrust_id': ser2ID,
+        'monitor_ip': monIP,
+        'checkbox_ip': S1IP,
+        'iTrust_ip': S2IP
+    }
+    var json_str = JSON.stringify(obj);
+    fs.writeFileSync(__dirname+'/../dropconfig.json', json_str);
+
+    await populate_inventory(monIP,S1IP,S2IP)
+
+    const sleep = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+      }
+
+    return [client,monID,ser1ID,ser2ID,monIP,S1IP,S2IP]
+
+}
+
+async function configure_infra(monID,ser1ID,ser2ID,monIP,S1IP,S2IP){
+
+
+    await firewall(monID, ser1ID, ser2ID, monIP, S1IP, S2IP);
+
+    if (fs.existsSync(path.resolve('pipeline/playbook_monitor.yml')) && fs.existsSync(path.resolve('inventory.ini')) && !process.env.GH_USER && !process.env.GH_PASS) {
+        await monitor('pipeline/playbook_monitor.yml', 'inventory.ini', 'pipeline/password/jenkins', `${process.env.GH_USER}`, `${process.env.GH_PASS}`);
+    }
+
+    else {
+        console.error(`Playbook or inventory don't exist. Environmental Variables not set`);
+    }
+}
+
+async function delete_infra(){
+
+    var stringify = fs.readFileSync(__dirname+'/../dropconfig.json','utf8')
+    obj = JSON.parse(stringify)
+    console.log(obj)
+
+    client = new DigitalOceanProvider()
+
+    await client.deleteDroplet(obj.monitor_id)
+    await client.deleteDroplet(obj.checkbox_id)
+    await client.deleteDroplet(obj.iTrust_id)
+
+    //delete files too
+    fs.unlinkSync(__dirname+'/../dropconfig.json')
+    fs.unlinkSync(__dirname+'/../inventory.ini')
 
 }
 
@@ -381,52 +457,30 @@ exports.handler = async argv => {
 
     (async () => {
 
-        let stringify = fs.readFileSync(__dirname+'/../pipeline/inventory.ini','utf-8');
-        
-        if(stringify.includes('cloud')&&stringify.includes('servers')){
-            throw console.error("servers already created");
+        if (action!="up"&&action!="destroy"){
+            console.log("Did you mean \'pipeline prod up\'")
         }
-        //Checking if production servers already exits
-        
-        if (!fs.existsSync(path.resolve(`${process.env.HOME}/.ssh/DEVOPS-04.pub`))) {
-            await keyGeneration();
-        }
-        let client = new DigitalOceanProvider();
-        var keyID = await client.createKey();
-        copyKey();
-        if (action === "up") {
-            var monID = await provision("monitor", keyID);
-            var ser1ID = await provision("server-01", keyID);
-            var ser2ID = await provision("server-02", keyID);
-        }
-        else {
-            console.error(`Run pipeline prod up`);
-        }
-        var monIP = await client.dropletInfo(monID);
-        var S1IP = await client.dropletInfo(ser1ID);
-        var S2IP = await client.dropletInfo(ser2ID);
+        if (action=="up"){
 
-        await populate_inventory(monIP,S1IP,S2IP)
+            if(fs.existsSync(__dirname+'/../inventory.ini','utf-8')){
+                console.log(chalk.blueBright("Setup already exits...skipping droplets creation"));
+                //read from a JSON
+                var stringify = fs.readFileSync(__dirname+'/../dropconfig.json','utf8')
+                obj = JSON.parse(stringify)
+                console.log(obj)
+                await configure_infra(obj.monitor_id,obj.checkbox_id,obj.iTrust_id,obj.monitor_ip,obj.checkbox_ip,obj.iTrust_ip)
+    
+            }
+            else{
+                var [client,monID,ser1ID,ser2ID,monIP,S1IP,S2IP] = await setup_infra();
+                await sleep(45000);
+                await configure_infra(monID,ser1ID,ser2ID,monIP,S1IP,S2IP);
+            }
 
-        const sleep = (milliseconds) => {
-            return new Promise(resolve => setTimeout(resolve, milliseconds))
-          }
-
-        await sleep(45000);
-
-        await firewall(monID, ser1ID, ser2ID, monIP, S1IP, S2IP);
-
-        if (fs.existsSync(path.resolve('pipeline/playbook_monitor.yml')) && fs.existsSync(path.resolve('pipeline/inventory.ini')) && !process.env.GH_USER && !process.env.GH_PASS) {
-            await monitor('pipeline/playbook_monitor.yml', 'pipeline/inventory.ini', 'pipeline/password/jenkins', `${process.env.GH_USER}`, `${process.env.GH_PASS}`);
         }
 
-        else {
-            console.error(`Playbook or inventory don't exist. Environmental Variables not set`);
+        if (action=="destroy"){
+            await delete_infra()
         }
-
-        // await client.deleteDroplet(monID)
-        // await client.deleteDroplet(ser1ID)
-        // await client.deleteDroplet(ser2ID)
-
     })();
 };
