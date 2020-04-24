@@ -12,7 +12,7 @@ The architecture consists of 3 servers
 For spanning the production servers and make them ready for deploying the applications use the following steps
 
 ```
-export NCSU_DOTOKEN=<token>
+export DOTOKEN=<token>
 ```
 
 The comamnd for setting up the infra and env for the production servers is present in `commads/prod.js`. Made idempotent
