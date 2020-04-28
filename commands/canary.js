@@ -76,13 +76,8 @@ async function start_microservice(){
     result = sshSync(`ansible-playbook --vault-password-file ${vaultfilePath} ${filePath} -i ${inventoryPath}`, 'vagrant@192.168.44.100')
     if( result.error ) { process.exit( result.status ); }
 
-    //start proxy server - 192.168.44.100
-
-
-
     //generate load - from localhost(means here)
 
-    
 
 }
 

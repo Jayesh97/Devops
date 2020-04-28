@@ -1,33 +1,45 @@
 ---
 
-- name: Install node
-  include_role: 
-    name: checkbox.io
-    tasks_from: node
+# - name: Install node
+#   include_role: 
+#     name: slaves
+#     tasks_from: node
 
-- name: Install Mongo
-  include_role: 
-    name: checkbox.io
-    tasks_from: mongo
+# - name: Install forever - global
+#   become: yes
+#   npm:
+#     name: forever
+#     global: yes
 
-- name: install env variables
-  include_role: 
-    name: checkbox.io
-    tasks_from: env
-
-- name: push package.json
-  become: yes
-  template:
-    src: package.json
-    dest: /home/vagrant/checkbox.io-micro-preview/
-    mode: 0664
-    owner: vagrant
+# - name: push package.json
+#   become: yes
+#   template:
+#     src: package.json
+#     dest: /home/vagrant/package.json
+#     mode: 0664
+#     owner: vagrant
 
 - name: push serve.js
   become: yes
   template:
-    src: package.json
-    dest: /home/vagrant/checkbox.io-micro-preview/
+    src: serve.js.j2
+    dest: /home/vagrant/serve.js
     mode: 0664
     owner: vagrant
+
+- name: Install node modules
+  become: yes
+  npm:
+    path: /home/vagrant/
+
+- name: Stop all services
+  become: yes
+  shell: 
+    cmd: forever stopall
+
+- name: Start the server
+  shell:
+    cmd: forever start serve.js
+  args: 
+    chdir: /home/vagrant/
 

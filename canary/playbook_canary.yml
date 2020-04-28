@@ -5,18 +5,19 @@
 
 - hosts: blue
   roles:
-   - ping
-   - update
+  #  - ping
+  #  - update
    - slaves
 
 - hosts: green
   roles:
-   - ping
-   - update
+  #  - ping
+  #  - update
    - slaves
+   - status
 
-- hosts: proxy
+- hosts: localhost
   roles:
-   - ping
-   - update
+  #  - ping
+  #  - update
    - proxy

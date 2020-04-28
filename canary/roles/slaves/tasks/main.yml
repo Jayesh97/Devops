@@ -1,11 +1,5 @@
 ---
 
-- name: Setting up env for checkbox.io
-  include: env.yml
-
-- name: Install Mongo
-  include: mongo.yml
-
 - name: Install nodejs
   include: node.yml
 
@@ -14,7 +8,6 @@
   npm:
     name: forever
     global: yes
-
 
 - name: Install node-modules
   become: yes
