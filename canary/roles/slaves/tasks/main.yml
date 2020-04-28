@@ -1,0 +1,34 @@
+---
+
+- name: Setting up env for checkbox.io
+  include: env.yml
+
+- name: Install Mongo
+  include: mongo.yml
+
+- name: Install nodejs
+  include: node.yml
+
+- name: Install forever - global
+  become: yes
+  npm:
+    name: forever
+    global: yes
+
+
+- name: Install node-modules
+  become: yes
+  npm:
+    path: /home/vagrant/checkbox.io-micro-preview/
+
+- name: Stop all services
+  become: yes
+  shell: 
+    cmd: forever stopall
+
+- name: Start the server
+  shell:
+    cmd: forever start index.js
+  args: 
+    chdir: /home/vagrant/checkbox.io-micro-preview/
+  

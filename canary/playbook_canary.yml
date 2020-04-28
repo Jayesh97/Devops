@@ -7,11 +7,16 @@
   roles:
    - ping
    - update
-   - checkbox.io_canary
+   - slaves
 
 - hosts: green
   roles:
    - ping
    - update
-   - checkbox.io_canary
-   
+   - slaves
+
+- hosts: proxy
+  roles:
+   - ping
+   - update
+   - proxy

@@ -18,6 +18,7 @@ headers = {
 
 
 app.post('/preview',async(req,res)=>{
+
     console.log(req.body)
     // console.log(req.headers)
     let response = await got.post('http://192.168.44.25:3000/preview', 
@@ -30,6 +31,10 @@ app.post('/preview',async(req,res)=>{
     console.log(response)//start your analysis here
     text = JSON.parse(response.body).preview
     res.send({preview:text})
+
+
+    //collect metrics - in proxy server -  192.168.44.100
+    
     
 })
 

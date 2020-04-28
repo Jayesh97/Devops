@@ -44,22 +44,26 @@ async function setup_infra(privateKey,blue_branch,green_branch){
     console.log(chalk.greenBright('Setting up production environment!'));
 
     //In assignment proxy was local, so make it look like local so you can sync the folders and perform the functions from local
-    // console.log(chalk.blueBright('Provisioning proxy server...'));
-    // let result = child.spawnSync(`bakerx`, `run proxy queues --ip 192.168.44.100 --sync`.split(' '), {shell:true, stdio: 'inherit'} );
-    // if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    console.log(chalk.blueBright('Provisioning proxy server...'));
+    let result = child.spawnSync(`bakerx`, `run proxy queues --ip 192.168.44.100 --sync`.split(' '), {shell:true, stdio: 'inherit'} );
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-    // console.log(chalk.blueBright('Provisioning blue server...'));
-    // result = child.spawnSync(`bakerx`, `run blue queues --ip 192.168.44.25`.split(' '), {shell:true, stdio: 'inherit'} );
-    // if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    console.log(chalk.blueBright('Provisioning blue server...'));
+    result = child.spawnSync(`bakerx`, `run blue queues --ip 192.168.44.25`.split(' '), {shell:true, stdio: 'inherit'} );
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-    // console.log(chalk.blueBright('Provisioning red server...'));
-    // result = child.spawnSync(`bakerx`, `run red queues --ip 192.168.44.30`.split(' '), {shell:true, stdio: 'inherit'} );
-    // if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    console.log(chalk.blueBright('Provisioning red server...'));
+    result = child.spawnSync(`bakerx`, `run red queues --ip 192.168.44.30`.split(' '), {shell:true, stdio: 'inherit'} );
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
 
-    // console.log(chalk.blueBright('Installing privateKey on proxy server'));
-    // let identifyFile = privateKey || path.join(os.homedir(), '.bakerx', 'insecure_private_key');
-    // result = scpSync (identifyFile, 'vagrant@192.168.44.100:/home/vagrant/.ssh/jk_rsa');
-    // if( result.error ) { console.log(result.error); process.exit( result.status ); }
+    console.log(chalk.blueBright('Installing privateKey on proxy server'));
+    let identifyFile = privateKey || path.join(os.homedir(), '.bakerx', 'insecure_private_key');
+    result = scpSync (identifyFile, 'vagrant@192.168.44.100:/home/vagrant/.ssh/jk_rsa');
+    if( result.error ) { console.log(result.error); process.exit( result.status ); }
+
+}
+
+async function start_microservice(){
 
     console.log(chalk.blueBright('Running init script in proxy server...'));
     result = sshSync('/bakerx/pipeline/server-init.sh', 'vagrant@192.168.44.100');
@@ -71,6 +75,14 @@ async function setup_infra(privateKey,blue_branch,green_branch){
     console.log(chalk.blueBright('Running ansible script...'));
     result = sshSync(`ansible-playbook --vault-password-file ${vaultfilePath} ${filePath} -i ${inventoryPath}`, 'vagrant@192.168.44.100')
     if( result.error ) { process.exit( result.status ); }
+
+    //start proxy server - 192.168.44.100
+
+
+
+    //generate load - from localhost(means here)
+
+    
 
 }
 
@@ -92,6 +104,7 @@ async function clone_repos(blue_branch,green_branch){
 async function run(privateKey,blue_branch,green_branch) {
 
     await setup_infra(privateKey);
-    // await clone_repos(blue_branch,green_branch);
+    await clone_repos(blue_branch,green_branch);
+    await start_microservice();
 
 }

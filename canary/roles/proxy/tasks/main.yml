@@ -1,0 +1,33 @@
+---
+
+- name: Install node
+  include_role: 
+    name: checkbox.io
+    tasks_from: node
+
+- name: Install Mongo
+  include_role: 
+    name: checkbox.io
+    tasks_from: mongo
+
+- name: install env variables
+  include_role: 
+    name: checkbox.io
+    tasks_from: env
+
+- name: push package.json
+  become: yes
+  template:
+    src: package.json
+    dest: /home/vagrant/checkbox.io-micro-preview/
+    mode: 0664
+    owner: vagrant
+
+- name: push serve.js
+  become: yes
+  template:
+    src: package.json
+    dest: /home/vagrant/checkbox.io-micro-preview/
+    mode: 0664
+    owner: vagrant
+
