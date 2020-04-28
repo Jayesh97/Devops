@@ -14,3 +14,71 @@
   include_role: 
     name: checkbox.io
     tasks_from: env
+
+- name: Clone the repo
+  git:
+    repo: "https://github.com/chrisparnin/checkbox.io.git"
+    dest: '{{ansible_env.HOME}}/checkbox.io'
+  
+
+- name: Install pm2 - global
+  become: yes
+  npm: 
+    name: pm2
+    global: yes
+
+- name: Install forever - global
+  become: yes
+  npm:
+    name: forever
+    global: yes
+
+- name: Copy the Html folder
+  become: yes
+  shell:
+    cmd: cp -r {{ansible_env.HOME}}/checkbox.io/public_html/* /usr/share/nginx/html/
+  
+
+- name: Push nginx.conf file
+  become: yes
+  template:
+    src: nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    mode: 0644
+    owner: root
+
+- name: Push default config file
+  become: yes
+  template:
+    src: default.j2
+    dest: /etc/nginx/sites-available/default
+    mode: 0777
+    owner: root
+
+- name: restart nginx
+  become: yes
+  systemd:
+    name: nginx
+    state: restarted
+
+- name: Install node packages
+  become: yes
+  npm:
+    path: /home/vagrant/checkbox.io/server-side/site/
+
+- name: "Check list of Node.js apps running."
+  shell: 
+    cmd: forever list
+  register: forever_list
+  changed_when: false
+
+- name: Start the server
+  shell:
+    cmd: forever start server.js
+  args: 
+    chdir: /home/vagrant/checkbox.io/server-side/site/
+  when: "forever_list.stdout.find('server.js') == -1"
+
+  
+  
+  

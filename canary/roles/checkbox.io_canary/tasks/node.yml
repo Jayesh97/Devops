@@ -1,0 +1,25 @@
+---
+- name: Install the gpg key for nodejs
+  become: yes
+  apt_key:
+    url: "https://deb.nodesource.com/gpgkey/nodesource.gpg.key"
+    state: present
+
+- name: Install the nodejs Latest repo
+  become: yes
+  apt_repository:
+    repo: "deb [ arch=amd64,arm64 ] https://deb.nodesource.com/node_12.x bionic main"
+    state: present
+    filename: nodejs-12
+    update_cache: yes
+
+- name: Install nodejs
+  become: yes
+  apt: 
+    pkg:
+      - nodejs
+      - nginx
+    state: latest
+
+
+

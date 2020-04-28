@@ -3,15 +3,15 @@
 # https://docs.ansible.com/ansible/latest/user_guide/playbooks_best_practices.html
 
 
-- hosts: checkbox.io
-  pre_tasks:
-  - name: Loading the variables
-    include_vars:
-      dir: vars
-      ignore_unknown_extensions: True
-      extensions:
-        - yml
+- hosts: blue
   roles:
    - ping
    - update
-   - deploy_checkbox
+   - checkbox.io_canary
+
+- hosts: green
+  roles:
+   - ping
+   - update
+   - checkbox.io_canary
+   

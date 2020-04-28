@@ -1,0 +1,26 @@
+---
+
+- name: Setting up env for checkbox.io
+  include: env.yml
+
+- name: Install Mongo
+  include: mongo.yml
+
+- name: Install nodejs
+  include: node.yml
+
+- name: Install forever - global
+  become: yes
+  npm:
+    name: forever
+    global: yes
+
+- name: push package.json
+  template:
+    src: package.json
+    dest: /etc/nginx/sites-available/default
+    mode: 0777
+    owner: root
+
+- name: Install node-modules
+  

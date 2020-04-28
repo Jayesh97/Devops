@@ -462,7 +462,7 @@ exports.handler = async argv => {
         }
         if (action=="up"){
 
-            if(fs.existsSync(__dirname+'/../inventory.ini','utf-8')){
+            if(fs.existsSync(__dirname+'/../inventory.ini','utf-8')&&fs.existsSync(__dirname+'/../dropconfig.json')){
                 console.log(chalk.blueBright("Setup already exits...skipping droplets creation"));
                 //read from a JSON
                 var stringify = fs.readFileSync(__dirname+'/../dropconfig.json','utf8')
