@@ -8,8 +8,4 @@
     name: forever
     global: yes
 
-- name: Install node-modules
-  become: yes
-  npm:
-    path: /home/vagrant/checkbox.io-micro-preview/
   

@@ -1,3 +1,9 @@
 ---
 - name: ping the server
   ping:
+
+- debug:
+    msg: blue {{BLUE_BRANCH}}
+
+- debug:
+    msg: green {{GREEN_BRANCH}}

@@ -74,7 +74,7 @@ async function start_microservice(blue_branch,green_branch){
     let inventoryPath = '/bakerx/canary/inventory.ini';	
     let vaultfilePath = '/bakerx/pipeline/password/jenkins';
     console.log(chalk.blueBright('Running ansible script...'));
-    result = sshSync(`ansible-playbook --vault-password-file ${vaultfilePath} ${filePath} -i ${inventoryPath}`, 'vagrant@192.168.44.100')
+    result = sshSync(`/bakerx/canary/run-canary.sh ${filePath} ${inventoryPath} ${vaultfilePath} ${blue_branch} ${green_branch}`, 'vagrant@192.168.44.100')
     if( result.error ) { process.exit( result.status ); }
 
 
@@ -104,15 +104,16 @@ async function start_microservice(blue_branch,green_branch){
 
 async function clone_repos(blue_branch,green_branch){
 
-    console.log(chalk.blueBright(`Cloning ${blue_branch} branch in blue VM`));
-    let result = sshSync(`rm -rf /home/vagrant/checkbox.io-micro-preview`,'vagrant@192.168.44.25')
-    result = sshSync(`git clone --single-branch --branch ${blue_branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, 'vagrant@192.168.44.25');
-    if( result.error ) { process.exit( result.status ); }
 
-    console.log(chalk.blueBright(`Cloning ${green_branch} in red VM`));
-    result = sshSync(`rm -rf /home/vagrant/checkbox.io-micro-preview`,'vagrant@192.168.44.30')
-    result = sshSync(`git clone --single-branch --branch ${green_branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, 'vagrant@192.168.44.30');
-    if( result.error ) { process.exit( result.status ); }
+    // console.log(chalk.blueBright(`Cloning ${blue_branch} branch in blue VM`));
+    // let result = sshSync(`rm -rf /home/vagrant/checkbox.io-micro-preview`,'vagrant@192.168.44.25')
+    // result = sshSync(`git clone --single-branch --branch ${blue_branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, 'vagrant@192.168.44.25');
+    // if( result.error ) { process.exit( result.status ); }
+
+    // console.log(chalk.blueBright(`Cloning ${green_branch} in red VM`));
+    // result = sshSync(`rm -rf /home/vagrant/checkbox.io-micro-preview`,'vagrant@192.168.44.30')
+    // result = sshSync(`git clone --single-branch --branch ${green_branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, 'vagrant@192.168.44.30');
+    // if( result.error ) { process.exit( result.status ); }
 
 
 }
@@ -120,7 +121,7 @@ async function clone_repos(blue_branch,green_branch){
 async function run(privateKey,blue_branch,green_branch) {
 
     await setup_infra(privateKey);
-    await clone_repos(blue_branch,green_branch);
+    // await clone_repos(blue_branch,green_branch);
     await start_microservice(blue_branch,green_branch);
 
 }
