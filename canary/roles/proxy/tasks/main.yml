@@ -18,6 +18,7 @@
     dest: /home/vagrant/package.json
     mode: 0664
     owner: vagrant
+    force: yes
 
 - name: push serve.js
   become: yes
@@ -26,6 +27,7 @@
     dest: /home/vagrant/serve.js
     mode: 0664
     owner: vagrant
+    force: yes
 
 - name: Install node modules
   become: yes
@@ -33,15 +35,11 @@
     path: /home/vagrant/
 
 - name: Stop all services
-  become: yes
-  shell: 
-    cmd: forever stopall
-  args:
-    chdir: /home/vagrant/
+  command: forever stopall
+  
 
 - name: Start the server
-  shell:
-    cmd: forever start serve.js
+  command: forever start serve.js
   args: 
     chdir: /home/vagrant/
 

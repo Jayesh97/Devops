@@ -112,12 +112,12 @@ async function calculate_score(){
 
 setInterval(async function(){
     TARGET = (TARGET==BLUE) ? GREEN:BLUE;
-},100000)
+},10000)
 
 
 setInterval(async function(){
     await calculate_score(report)
-},200000)
+},20000)
 
 app.post('/preview',async(req,res)=>{
 
@@ -157,6 +157,12 @@ app.listen(port, () => console.log(`Proxy listening on http://localhost:${port}`
 
 // curl -X POST -H "Content-Type: application/json" --data @test/resources/survey.json http://192.168.44.100:3080/preview
 
+//curl -X POST -H "Content-Type: application/json" --data @test/resources/survey.json http://192.168.44.25:3000/preview
+
+//curl -X POST -H "Content-Type: application/json" --data @test/resources/survey.json http://192.168.44.30:3000/preview
+
 //git clone --single-branch --branch broken https://github.com/chrisparnin/checkbox.io-micro-preview.git
+
+//git clone --single-branch --branch master https://github.com/chrisparnin/checkbox.io-micro-preview.git
 
 // git clone https://github.com/chrisparnin/checkbox.io-micro-preview.git

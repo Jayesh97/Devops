@@ -11,6 +11,8 @@
    - blue
 
 - hosts: green
+  vars:
+    green_b: master
   roles:
    - ping
    - update

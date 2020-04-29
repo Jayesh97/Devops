@@ -18,14 +18,11 @@
 
 
 - name: Stop all services
-  become: yes
-  shell: 
-    cmd: forever stopall
-  args:
-    chdir: /home/vagrant/checkbox.io-micro-preview/
+  command: forever stopall
+
 
 - name: Start the server
   shell:
     cmd: forever start index.js
   args: 
-    chdir: /home/vagrant/checkbox.io-micro-preview/
+    chdir: /home/vagrant/checkbox.io-micro-preview

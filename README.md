@@ -33,7 +33,43 @@ pipeline prod destroy
 
 ## Canary Analysis
 
-In this task we would configure the 
+In this task we would implement the Netflix style red-black deployment with canary analysis of a microservice. The microservice under consideration is the /preview POST end-point of the checkbox.io Application
+
+The repo consists of 2 branches 
+- Master - Working production level code
+    - Returns Status code 200
+    - Body contains the HTML preview
+- Broken - Broken code implementing new features 
+    - Returns status code of 500
+    - Body contains
+
+Parameters Analysed include
+1. CPU Usage
+2. Memory Usage
+3. Latency
+4. StatusCode
+5. Response Body
+
+### Senerio-1 
+
+Master branch on both the VMs
+
+```
+pipeline canary master master
+```
+
+The cananry score obtained would be high in this senerio with StatusCode, ResponseBody exaactly same. Some other notable features would be Latency, where we would obtain almost same latency for each of the API call
+
+
+### Senerio-2
+
+Master branch on BLUE and broken branch on GREEN
+
+```
+pipeline canary master broken
+```
+
+A low canary score can be seen in this case as the broken branch metrics are different. The statusCode for broken is 500 with response body as the error obtained during execution
 
 ## Scrum Meeting 2 - Date: 04/21/2020
 
@@ -51,7 +87,7 @@ In this task we would configure the
 #### Tasks
 
 * Configure Databases and Tomcat for iTrust deployment
-* Monitor application specific metrics - api endpoints in checkbox.io
+* Monitor application specific metrics for iTrust
 * Install the firewall rules to enable redis connection
 
 ### Jayesh
