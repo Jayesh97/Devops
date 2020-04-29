@@ -1,5 +1,4 @@
 ---
-
 - name: Install nodejs
   include: node.yml
 
@@ -13,15 +12,4 @@
   become: yes
   npm:
     path: /home/vagrant/checkbox.io-micro-preview/
-
-- name: Stop all services
-  become: yes
-  shell: 
-    cmd: forever stopall
-
-- name: Start the server
-  shell:
-    cmd: forever start index.js
-  args: 
-    chdir: /home/vagrant/checkbox.io-micro-preview/
   

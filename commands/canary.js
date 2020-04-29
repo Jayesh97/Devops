@@ -2,6 +2,7 @@ const child = require('child_process');
 const chalk = require('chalk');
 const path = require('path');
 const os = require('os');
+var shell = require('shelljs');
 
 const scpSync = require('../lib/scp');
 const sshSync = require('../lib/ssh');
@@ -76,6 +77,21 @@ async function start_microservice(){
     result = sshSync(`ansible-playbook --vault-password-file ${vaultfilePath} ${filePath} -i ${inventoryPath}`, 'vagrant@192.168.44.100')
     if( result.error ) { process.exit( result.status ); }
 
+    //run the api calls
+    // console.log(__dirname)
+    // child.execSync("cd ../canary/ &&  ls", {'stdio': 'ignore'})
+
+    // let response = await got.post(`http://localhost:3080/preview`, 
+    // {
+    //     headers:headers,
+    //     body: JSON.stringify(req.body)
+    // }).catch(e => 
+    //     res.status(500).send( {preview: e.message})
+    // );
+    // console.log(response)
+
+
+
     //generate load - from localhost(means here)
 
 
@@ -83,12 +99,12 @@ async function start_microservice(){
 
 async function clone_repos(blue_branch,green_branch){
 
-    console.log(chalk.blueBright(`Cloning master branch in blue VM`));
+    console.log(chalk.blueBright(`Cloning ${blue_branch} branch in blue VM`));
     let result = sshSync(`rm -rf checkbox.io-micro-preview`,'vagrant@192.168.44.25')
     result = sshSync(`git clone --single-branch --branch ${blue_branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, 'vagrant@192.168.44.25');
     if( result.error ) { process.exit( result.status ); }
 
-    console.log(chalk.blueBright(`Cloning broken branch in red VM`));
+    console.log(chalk.blueBright(`Cloning ${green_branch} in red VM`));
     result = sshSync(`rm -rf checkbox.io-micro-preview`,'vagrant@192.168.44.30')
     result = sshSync(`git clone --single-branch --branch ${green_branch} https://github.com/chrisparnin/checkbox.io-micro-preview.git`, 'vagrant@192.168.44.30');
     if( result.error ) { process.exit( result.status ); }
@@ -98,6 +114,11 @@ async function clone_repos(blue_branch,green_branch){
 
 async function run(privateKey,blue_branch,green_branch) {
 
+    // console.log(shell.pwd())
+    // shell.cd(__dirname+'/../canary')
+    // shell.exec(`touch f1`)
+    // console.log(shell.pwd())
+    // child.spawnSync(`cd`,, {shell:true, stdio: 'inherit'} )
     await setup_infra(privateKey);
     await clone_repos(blue_branch,green_branch);
     await start_microservice();

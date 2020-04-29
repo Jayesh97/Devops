@@ -5,7 +5,7 @@ const express = require('express');
 const app = express()
 const got = require('got');
 const port = 3080;
-
+var mwu = require('mann-whitney-utest');
 
 app.configure(function () {
     app.use(express.bodyParser());
@@ -16,34 +16,147 @@ headers = {
 	'content-type':'application/json',
 };
 
+const BLUE  = 'http://192.168.44.25';
+const GREEN = 'http://192.168.44.30';
+
+TARGET = BLUE
+
+report = {
+    'cpu': {
+        'blueAvg':0,
+        'greenAvg':0,
+        'report':''
+    },
+    'mem': {
+        'blueAvg':0,
+        'greenAvg':0,
+        'report':''
+    },
+    'statusCode': {
+        'blueAvg':0,
+        'greenAvg':0,
+        'report':''
+    },
+    'latency': {
+        'blueAvg':0,
+        'greenAvg':0,
+        'report':''
+    },
+    'body': {
+        'blueAvg':0,
+        'greenAvg':0,
+        'report':''
+    }
+}
+
+metrics = {
+    [BLUE] : {
+        'samples': 0,
+        'cpu': [],
+        'mem': [],
+        'statusCode': [],
+        'latency': [0],
+        'body': []
+    },
+    [GREEN] : {
+        'samples': 0,
+        'cpu': [],
+        'mem': [],
+        'statusCode': [],
+        'latency': [],
+        'body': []
+    }  
+}
+
+//cummulate metric and send cummulative metrics to client and client will calulate canaray
+//calculate canary on interval basis and dump the report to the file
+
+
+async function calculate_score(){
+    for(var property in metrics[BLUE]){
+        if(property=='samples'||property=='cpu'||property=='mem'){
+            continue
+        }
+        console.log(property)
+        report[property]['blueAvg'] = metrics[BLUE][property].reduce((a,b) => a + b, 0) / metrics[BLUE][property].length
+        report[property]['greenAvg'] = metrics[GREEN][property].reduce((a,b) => a + b, 0) / metrics[GREEN][property].length
+        var samples = [metrics[BLUE][property],metrics[GREEN][property]]
+        var u = mwu.test(samples);
+        if (mwu.significant(u, samples)) {
+            report[property]['report']='The data is significant!';
+        } else {
+            report[property]['report']='The data is not significant';
+        }
+    }
+    console.log(metrics)
+    console.log(report)
+}
+
+// var samples = [
+//     [
+//         500, 500, 500
+//       ],
+//       [
+//         200, 500, 200
+//       ]
+// ]
+// var u = mwu.test(samples);
+// console.log(u)
+// if (mwu.significant(u, samples)) {
+//     console.log('The data is significant!');
+// } else {
+//     console.log('The data is not significant');
+// }
+
+
+
+setInterval(async function(){
+    TARGET = (TARGET==BLUE) ? GREEN:BLUE;
+},100000)
+
+
+setInterval(async function(){
+    await calculate_score(report)
+},200000)
 
 app.post('/preview',async(req,res)=>{
-    // console.log(req.body)
-    // console.log(req.headers)
-    let response = await got.post(TARGET+'/preview', 
+
+    // console.log(req)
+
+    let response = await got.post(TARGET+`:3000/preview`, 
     {
         headers:headers,
         body: JSON.stringify(req.body)
     }).catch(e => 
         res.status(500).send( {preview: e.message})
     );
-    console.log(response)//start your analysis here
+    // console.log(response)//start your analysis here
     text = JSON.parse(response.body).preview
+
+    // console.log(typeof metrics[TARGET]['statusCode'])
+    metrics[TARGET]['latency'].push(response.timings.end-response.timings.start)
+    metrics[TARGET]['body'].push(Buffer.byteLength(text,'utf-8'))
+    metrics[TARGET]['samples']+=1
+
     if(text.includes("data.split is not a function")){
-        res.status(500).send({preview:text})
+        metrics[TARGET]['statusCode'].push(500)
+        res.status(500).send({preview:text,'report':report,'metrics':metrics})
     }
     else{
-        res.send({preview:text})
+        metrics[TARGET]['statusCode'].push(response.statusCode)
+        res.send({preview:text,'report':report,'metrics':metrics})
     } 
+    // console.log(metrics)
 })
 
-const BLUE  = 'http://192.168.44.25:3000';
-const GREEN = 'http://192.168.44.30:3000';
-
-TARGET = BLUE
-
-setInterval(async function(){
-    TARGET = (TARGET==BLUE) ? GREEN:BLUE;
-},5000)
 
 app.listen(port, () => console.log(`Proxy listening on http://localhost:${port}`))
+
+
+// curl -X POST -H "Content-Type: application/json" --data @test/resources/survey.json http://localhost:3080/preview
+
+// curl -X POST -H "Content-Type: application/json" --data @test/resources/survey.json http://192.168.44.100:3080/preview
+
+//git clone --single-branch --branch broken https://github.com/chrisparnin/checkbox.io-micro-preview.git
+
+// git clone https://github.com/chrisparnin/checkbox.io-micro-preview.git

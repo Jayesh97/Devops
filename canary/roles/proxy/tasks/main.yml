@@ -1,23 +1,23 @@
 ---
 
-# - name: Install node
-#   include_role: 
-#     name: slaves
-#     tasks_from: node
+- name: Install node
+  include_role: 
+    name: env
+    tasks_from: node
 
-# - name: Install forever - global
-#   become: yes
-#   npm:
-#     name: forever
-#     global: yes
+- name: Install forever - global
+  become: yes
+  npm:
+    name: forever
+    global: yes
 
-# - name: push package.json
-#   become: yes
-#   template:
-#     src: package.json
-#     dest: /home/vagrant/package.json
-#     mode: 0664
-#     owner: vagrant
+- name: push package.json
+  become: yes
+  template:
+    src: package.json
+    dest: /home/vagrant/package.json
+    mode: 0664
+    owner: vagrant
 
 - name: push serve.js
   become: yes
@@ -36,6 +36,8 @@
   become: yes
   shell: 
     cmd: forever stopall
+  args:
+    chdir: /home/vagrant/
 
 - name: Start the server
   shell:

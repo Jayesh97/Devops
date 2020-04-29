@@ -31,6 +31,36 @@ Another command has also been added to support destroying the infrastructure
 pipeline prod destroy
 ```
 
+## Canary Analysis
+
+In this task we would configure the 
+
+## Scrum Meeting 2 - Date: 04/21/2020
+
+### Luv Khurana
+
+#### Tasks:
+
+* Create a canary.js script in the commands
+* Configure the infrastructure for canary analysis
+* Determine the metrics for canary analysis
+
+
+### Venkata Sai
+
+#### Tasks
+
+* Configure Databases and Tomcat for iTrust deployment
+* Monitor application specific metrics - api endpoints in checkbox.io
+* Install the firewall rules to enable redis connection
+
+### Jayesh
+
+#### Tasks  
+
+* Configure Nginx Proxy for checkbox.io deployment
+* Monitor application specific metrics - api endpoints in checkbox.io
+* Compute Canary Score and Proxying API calls to BLUE, GREEN
 
 ## Scrum Meeting 1 - Date: 04/15/2020
 
@@ -57,3 +87,4 @@ pipeline prod destroy
 * Cleaning up the Milestone-2 code
 * Population inventory for ansible-playbook
 * Idempotancy of `pipeline prod up`
+

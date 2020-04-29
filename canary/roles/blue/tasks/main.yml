@@ -1,0 +1,31 @@
+# - name: push redis script
+#   become: yes
+#   template:
+#     src: met.js.j2
+#     dest: /home/vagrant/met.js
+#     mode: 0664
+#     owner: vagrant
+
+# - name: push redis package.json
+#   bacome: yes
+#   template:
+#     src: package.json
+#     dest: /home/vagrant/package.json
+#     mode: 0664
+#     owner: vagrant
+
+# - name: do i have to start redis?
+
+
+- name: Stop all services
+  become: yes
+  shell: 
+    cmd: forever stopall
+  args:
+    chdir: /home/vagrant/checkbox.io-micro-preview/
+
+- name: Start the server
+  shell:
+    cmd: forever start index.js
+  args: 
+    chdir: /home/vagrant/checkbox.io-micro-preview/

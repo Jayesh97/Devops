@@ -15,6 +15,7 @@
     "pug": "^2.0.4",
     "underscore": "^1.10.2",
     "chalk": "4.0.0",
-    "got": "10.7.0"
+    "got": "10.7.0",
+    "mann-whitney-utest": "1.0.5"
   }
 }
